@@ -241,7 +241,25 @@ export class ZConfigSettings {
 
         this.gui.registerOpened(() => {
             currentOpenedGUI = this.gui
-            this.selectedCategory = Object.entries(Object.values(this.data.groups)[0])[0]
+            let selectedCategory = null
+            for (const groupData of Object.values(this.data.groups)) {
+                const groupHasVisibleElements = Object.values(groupData).some(categoryData => {
+                    if (!categoryData.subcategories) return false
+                    return Object.values(categoryData.subcategories).some(subcategory =>
+                        Object.values(subcategory.elements).some(element =>
+                            !this.IsElementHidden(element)
+                        )
+                    )
+                })
+                if (groupHasVisibleElements) {
+                    selectedCategory = Object.entries(groupData)[0]
+                    break
+                }
+            }
+            if (!selectedCategory) {
+                selectedCategory = Object.entries(Object.values(this.data.groups)[0])[0]
+            }
+            this.selectedCategory = selectedCategory
             this.selectedSettings = null
         })
         this.gui.registerClosed(() => {
