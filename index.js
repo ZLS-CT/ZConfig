@@ -520,23 +520,44 @@ export class ZConfigSettings {
                 ZRenderLib.drawGUIStringRGBA(drawContext, globalSettingsButtonText, sidebarButtonX + (sidebarButtonWidth + 1) / 2 - globalSettingsButtonTextWidth / 2, lastSidebarButtonY + 2, ...globalSettingsButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
             }
 
+            let showEditHudButton = false
+            Object.entries(this.data.groups).forEach(([groupName, groupData]) => {
+                if (groupName == "default") return
+                Object.values(groupData).some(categoryData => {
+                    if (!categoryData.subcategories) return false
+                    return Object.values(categoryData.subcategories).some(subcategory =>
+                        Object.values(subcategory.elements).some(element => {
+                            if (!this.IsElementHidden(element)) {
+                                if (element.hudData) {
+                                    showEditHudButton = true
+                                }
+                            }
+                        })
+                    )
+                })
+            })
+
             // Draw Edit HUD button
             const editHudText = "Edit HUD"
             const editHudTextWidth = ZRenderLib.getStringWidth(editHudText)
-            const editHudPaddingX = 6
-            const editHudPaddingY = 5
-            const editHudHeight = 12
-            const editHudWidth = categoryWidth - editHudPaddingX * 2
-            const editHudX = iconWidth + editHudPaddingX - insetSpacing
-            const editHudY = height + titleHeight - (editHudHeight + editHudPaddingY) * (showGlobalSettingsButton ? 2 : 1)
 
-            let editHudButtonColor = colors.primary
-            let editHudButtonTextColor = colors.text
-            if (Utils.isMouseover(mx, my, editHudX - doubleInsetSpacing, editHudY - insetSpacing, editHudWidth + doubleInsetSpacing + 1, editHudHeight + doubleInsetSpacing)) {
-                editHudButtonColor = colors.light
-                editHudButtonTextColor = ZRenderLib.getRGBAColorList255(ZRenderLib.YELLOW)
-                if (Utils.isMouseButtonClicked(0)) {
-                    Hud.openHudGui(currentOpenedGUI)
+            if (showEditHudButton) {
+                sidebarButtonCount++
+                lastSidebarButtonY -= sidebarButtonHeight + sidebarButtonPaddingY
+                let editHudButtonColor = colors.primary
+                let editHudButtonTextColor = colors.text
+
+                // Draw button
+                ZRenderLib.drawRoundedRectRGBA(drawContext, sidebarButtonX - insetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing, 4, ...colors.tertiary)
+                ZRenderLib.drawRoundedRectRGBA(drawContext, sidebarButtonX, lastSidebarButtonY, sidebarButtonWidth + 1, sidebarButtonHeight, 3, ...editHudButtonColor)
+                ZRenderLib.drawGUIStringRGBA(drawContext, editHudText, sidebarButtonX + (sidebarButtonWidth + 1) / 2 - editHudTextWidth / 2, lastSidebarButtonY + 2, ...editHudButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+
+                if (Utils.isMouseover(mx, my, sidebarButtonX - doubleInsetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing)) {
+                    editHudButtonColor = colors.light
+                    editHudButtonTextColor = ZRenderLib.getRGBAColorList255(ZRenderLib.YELLOW)
+                    if (Utils.isMouseButtonClicked(0)) {
+                        Hud.openHudGui(currentOpenedGUI)
+                    }
                 }
             }
 
@@ -619,6 +640,10 @@ export class ZConfigSettings {
             })
             scroll[1].max = Math.max(0, (titleHeight + categoryPadding + (i - 1.5) * 16) - height)
             scroll[1].width = categoryWidth
+
+            // Test Scissor
+            // ZRenderLib.drawRectRGBA(drawContext, 0, 0, 1920, 1080, 255, 0, 0, 255)
+            ZRenderLib.disableScissor(drawContext)
 
             const scrollBarWidth = 8
             const paddingX = 8
