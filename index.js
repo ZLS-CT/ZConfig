@@ -489,20 +489,24 @@ export class ZConfigSettings {
             ZRenderLib.drawImageRGBA(drawContext, searchIcon, searchBarX + searchBarWidth - 12, searchBarY + (searchBarHeight - 8) / 2, 8, 8, ...colors.text)
 
             // Draw Global Settings Button
+            let sidebarButtonCount = 0
+            const sidebarButtonPaddingX = 6
+            const sidebarButtonPaddingY = 5
+            const sidebarButtonHeight = 12
+            const sidebarButtonWidth = categoryWidth - sidebarButtonPaddingX * 2
+            const sidebarButtonX = iconWidth + sidebarButtonPaddingX - insetSpacing
+            let lastSidebarButtonY = height + titleHeight
+
             const showGlobalSettingsButton = !Variables.globalConfig.gui.isOpen()
             if (showGlobalSettingsButton) {
+                sidebarButtonCount++
+                lastSidebarButtonY -= sidebarButtonHeight + sidebarButtonPaddingY
                 const globalSettingsButtonText = "Global Settings"
                 const globalSettingsButtonTextWidth = ZRenderLib.getStringWidth(globalSettingsButtonText)
-                const globalSettingsButtonPaddingX = 6
-                const globalSettingsButtonPaddingY = 5
-                const globalSettingsButtonHeight = 12
-                const globalSettingsButtonWidth = categoryWidth - globalSettingsButtonPaddingX * 2
-                const globalSettingsButtonX = iconWidth + globalSettingsButtonPaddingX - insetSpacing
-                const globalSettingsButtonY = height + titleHeight - globalSettingsButtonHeight - globalSettingsButtonPaddingY
 
                 let globalSettingsButtonColor = colors.primary
                 let globalSettingsButtonTextColor = colors.text
-                if (Utils.isMouseover(mx, my, globalSettingsButtonX - doubleInsetSpacing, globalSettingsButtonY - insetSpacing, globalSettingsButtonWidth - globalSettingsButtonPaddingX + doubleInsetSpacing + 1, globalSettingsButtonHeight + doubleInsetSpacing)) {
+                if (Utils.isMouseover(mx, my, sidebarButtonX - doubleInsetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth - sidebarButtonPaddingX + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing)) {
                     globalSettingsButtonColor = colors.light
                     globalSettingsButtonTextColor = ZRenderLib.getRGBAColorList255(ZRenderLib.YELLOW)
                     if (Utils.isMouseButtonClicked(0)) {
@@ -511,9 +515,9 @@ export class ZConfigSettings {
                     }
                 }
 
-                ZRenderLib.drawRoundedRectRGBA(drawContext, globalSettingsButtonX - insetSpacing, globalSettingsButtonY - insetSpacing, globalSettingsButtonWidth + doubleInsetSpacing + 1, globalSettingsButtonHeight + doubleInsetSpacing, 4, ...colors.tertiary)
-                ZRenderLib.drawRoundedRectRGBA(drawContext, globalSettingsButtonX, globalSettingsButtonY, globalSettingsButtonWidth + 1, globalSettingsButtonHeight, 3, ...globalSettingsButtonColor)
-                ZRenderLib.drawGUIStringRGBA(drawContext, globalSettingsButtonText, globalSettingsButtonX + (globalSettingsButtonWidth + 1) / 2 - globalSettingsButtonTextWidth / 2, globalSettingsButtonY + 2, ...globalSettingsButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+                ZRenderLib.drawRoundedRectRGBA(drawContext, sidebarButtonX - insetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing, 4, ...colors.tertiary)
+                ZRenderLib.drawRoundedRectRGBA(drawContext, sidebarButtonX, lastSidebarButtonY, sidebarButtonWidth + 1, sidebarButtonHeight, 3, ...globalSettingsButtonColor)
+                ZRenderLib.drawGUIStringRGBA(drawContext, globalSettingsButtonText, sidebarButtonX + (sidebarButtonWidth + 1) / 2 - globalSettingsButtonTextWidth / 2, lastSidebarButtonY + 2, ...globalSettingsButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
             }
 
             // Draw Edit HUD button
@@ -536,13 +540,15 @@ export class ZConfigSettings {
                 }
             }
 
-            ZRenderLib.drawRoundedRectRGBA(drawContext, editHudX - insetSpacing, editHudY - insetSpacing, editHudWidth + doubleInsetSpacing + 1, editHudHeight + doubleInsetSpacing, 4, ...colors.tertiary)
-            ZRenderLib.drawRoundedRectRGBA(drawContext, editHudX, editHudY, editHudWidth + 1, editHudHeight, 3, ...editHudButtonColor)
-            ZRenderLib.drawGUIStringRGBA(drawContext, editHudText, editHudX + (editHudWidth + 1) / 2 - editHudTextWidth / 2, editHudY + 2, ...editHudButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
-
             // Draw button divider
             const dividerWidth = 0.95
-            ZRenderLib.drawRectRGBA(drawContext, editHudX + editHudWidth * (1 - dividerWidth) / 2, editHudY - editHudPaddingY * 1.5, editHudWidth * dividerWidth, 1, ...colors.bright)
+            ZRenderLib.drawRectRGBA(drawContext, sidebarButtonPaddingX + sidebarButtonWidth * (1 - dividerWidth) / 2, lastSidebarButtonY - sidebarButtonPaddingY, sidebarButtonWidth * dividerWidth, 1, ...colors.bright)
+
+            const sidebarScissorX = iconWidth
+            const sidebarScissorY = titleHeight
+            const sidebarScissorWidth = categoryWidth
+            const sidebarScissorHeight = (lastSidebarButtonY - sidebarButtonPaddingY) - sidebarScissorY
+            ZRenderLib.enableScaledScissor(drawContext, sidebarScissorX, sidebarScissorY, sidebarScissorWidth, sidebarScissorHeight)
 
             i = 0
             // Draw sidebar groups
@@ -626,8 +632,6 @@ export class ZConfigSettings {
                 rX = width / 2 - settingsWidth / 2 + paddingX
             }
 
-            const screen = ZRenderLib.GetScreen()
-            const screenHeight = screen.getHeight()
             const guiX = iconWidth + categoryWidth
             const guiY = titleHeight
             const guiWidth = width - categoryWidth
