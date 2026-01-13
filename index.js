@@ -520,7 +520,7 @@ export class ZConfigSettings {
                 ZRenderLib.drawGUIStringRGBA(drawContext, globalSettingsButtonText, sidebarButtonX + (sidebarButtonWidth + 1) / 2 - globalSettingsButtonTextWidth / 2, lastSidebarButtonY + 2, ...globalSettingsButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
             }
 
-            let showEditHudButton = false
+            let showEditHudButton = true
             Object.entries(this.data.groups).forEach(([groupName, groupData]) => {
                 if (groupName == "default") return
                 Object.values(groupData).some(categoryData => {
@@ -563,7 +563,7 @@ export class ZConfigSettings {
 
             // Draw button divider
             const dividerWidth = 0.95
-            ZRenderLib.drawRectRGBA(drawContext, sidebarButtonPaddingX + sidebarButtonWidth * (1 - dividerWidth) / 2, lastSidebarButtonY - sidebarButtonPaddingY, sidebarButtonWidth * dividerWidth, 1, ...colors.bright)
+            ZRenderLib.drawRectRGBA(drawContext, sidebarButtonX + sidebarButtonWidth * (1 - dividerWidth) / 2, lastSidebarButtonY - sidebarButtonPaddingY, sidebarButtonWidth * dividerWidth, 1, ...colors.bright)
 
             const sidebarScissorX = iconWidth
             const sidebarScissorY = titleHeight
