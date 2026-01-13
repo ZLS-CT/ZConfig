@@ -72,7 +72,7 @@ export class ZConfigSettings {
                 const dependsOnOption = this.data.persistent[dependsOnVarName]
 
                 if (!dependsOnOption) return false
-                if (typeof dependsOnValue === "function") {
+                if (typeof dependsOnValue == "function") {
                     return dependsOnValue(dependsOnOption.value)
                 }
                 return dependsOnOption.value == dependsOnValue
@@ -555,14 +555,13 @@ export class ZConfigSettings {
                 return 0
             }).forEach(([groupName, groupData]) => {
                 if (groupName == "default") return
-
                 const groupHasVisibleElements = Object.values(groupData).some(categoryData => {
                     if (!categoryData.subcategories) return false
-
                     return Object.values(categoryData.subcategories).some(subcategory =>
-                        Object.values(subcategory.elements).some(element =>
-                            !this.IsElementHidden(element)
-                        )
+                        Object.values(subcategory.elements).some(element => {
+                            allHidden = false
+                            return !this.IsElementHidden(element)
+                        })
                     )
                 })
                 if (!groupHasVisibleElements) return
@@ -580,18 +579,7 @@ export class ZConfigSettings {
                     }
                     return 0
                 }).forEach(([categoryName, categoryData]) => {
-                    if (categoryName == "default") return
-
-                    // if all settings in category are hidden, skip
-                    let allHidden = true
-                    Object.values(categoryData["subcategories"]).forEach(subcategory => {
-                        Object.values(subcategory["elements"]).forEach(element => {
-                            if (!this.IsElementHidden(element)) {
-                                allHidden = false
-                            }
-                        })
-                    })
-                    if (allHidden) return
+                    if (categoryName == "default" || allHidden) return
 
                     let rrX = rX + categoryPadding
                     let rrY = titleHeight + categoryPadding + i * 16 + scroll[1].scroll
@@ -645,10 +633,10 @@ export class ZConfigSettings {
             const guiWidth = width - categoryWidth
             const guiHeight = height
             const scissorX = guiX
-            const scissorY = screenHeight - guiY - guiHeight
+            const scissorY = guiY
             const scissorWidth = guiWidth
             const scissorHeight = guiHeight
-            ZRenderLib.enableScaledScissor(drawContext, guiX, scissorY, scissorWidth, scissorHeight)
+            ZRenderLib.enableScaledScissor(drawContext, scissorX, scissorY, scissorWidth, scissorHeight)
 
             function isRectInViewport(x, y, width, height) {
                 const x1 = x
@@ -992,7 +980,6 @@ export class ZConfigSettings {
 
             // Test Scissor
             // ZRenderLib.drawRectRGBA(drawContext, 0, 0, 1920, 1080, 255, 0, 0, 255)
-
             ZRenderLib.disableScissor(drawContext)
 
             i++
