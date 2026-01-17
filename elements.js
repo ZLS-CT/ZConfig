@@ -508,6 +508,13 @@ export const setupKeybind = (option, settingsObject) => {
             option.value = keyName
             option.extraPersistent.isMouseKey = isMouseKey
             option.extraPersistent.modifiers = modifiers
+
+            settingsObject.data.persistent[option.varname].value = keyName
+            settingsObject.data.persistent[option.varname].extraPersistent = {
+                isMouseKey: isMouseKey,
+                modifiers: modifiers,
+                activateInMenus: option.extraPersistent.activateInMenus,
+            }
             settingsObject.callOnChanged(option)
         })
         option.isSetup = true

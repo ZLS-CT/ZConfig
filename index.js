@@ -1328,8 +1328,11 @@ export class ZConfigSettings {
             data.extra.persistentPlaceholder = data.extraPersistent
         }
 
-        // This is awful, but imports apparently aren't loaded here
-        require(`../ZConfig/elements`).setupKeybind(data, this)
+        data.setupCallback = (option) => {
+            // This is awful, but imports apparently aren't loaded here
+            require(`../ZConfig/elements`).setupKeybind(option, this)
+        }
+
         this._addOption(data)
         return this
     }
@@ -1446,6 +1449,7 @@ export class ZConfigSettings {
         onPress = null,
         onValueChanged = null,
         hideIf = null,
+        setupCallback = null,
     }) {
         if (type == "colour") type = "color"
         if (!category) category = "default"
@@ -1526,6 +1530,10 @@ export class ZConfigSettings {
 
         if (onValueChanged) {
             this.registerListener(varname, onValueChanged)
+        }
+
+        if (setupCallback) {
+            setupCallback(this.data.groups[group][category]["subcategories"][subcategory]["elements"][varname])
         }
 
         Object.defineProperty(this, varname || name, {
