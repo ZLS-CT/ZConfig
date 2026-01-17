@@ -500,7 +500,7 @@ export const setupKeybind = (option, settingsObject) => {
             option.extraPersistent.isMouseKey,
             option.extraPersistent.modifiers,
             option.extraPersistent.activateInMenus,
-            option.onPress
+            option.onPress,
         )
 
         Variables.inputs[option.varname].onChanged((keyName, isMouseKey, modifiers) => {

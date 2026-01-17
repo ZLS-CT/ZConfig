@@ -1,6 +1,6 @@
 import * as ZRenderLib from "../ZRenderLib/index"
 import * as ZKeys from "ZKeys"
-import { StartDelayedCallback, isLegacy, ChatMessage } from "ZCore"
+import { StartDelayedCallback, DeleteDelayedCallback, isLegacy, ChatMessage } from "ZCore"
 import * as Variables from "./variables"
 
 const Desktop = Java.type('java.awt.Desktop')
@@ -786,7 +786,7 @@ export class KeybindInput {
                 }
 
                 if (ZKeys.isModifierKeyCode(keyCode)) {
-                    this.pendingModifierKey = { keyCode, keyCode }
+                    this.pendingModifierKey = { keyCode }
                     StartDelayedCallback(this.modifierDelayID, 250, () => {
                         if (this.pendingModifierKey && this.isActive) {
                             this.keyCode = this.pendingModifierKey.keyCode
@@ -892,9 +892,7 @@ export class KeybindInput {
         )
     }
     clearModifierDelay() {
-        if (delayedCallbacks.hasOwnProperty(this.modifierDelayID)) {
-            delete delayedCallbacks[this.modifierDelayID]
-        }
+        DeleteDelayedCallback(this.modifierDelayID)
         this.pendingModifierKey = null
     }
     getWidth() {
