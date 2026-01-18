@@ -198,7 +198,7 @@ export class ZConfigSettings {
                             moduleName: this.moduleName,
                             key: elementVarName,
                             item: element,
-                            searchText: (elementName + ' ' + elementDescription).toLowerCase()
+                            searchText: (elementName + ' ' + elementDescription).toLowerCase(),
                         })
                     })
                 })
@@ -402,7 +402,7 @@ export class ZConfigSettings {
             const moduleTitleHeight = 24
             const titleBarX = iconWidth
             const titleBarY = titleHeight - moduleTitleHeight
-            const titleText = this.moduleName
+            const titleText = this.moduleName.trim()
             const moduleTitleWidth = ZRenderLib.getStringWidth(titleText)
 
             if (Variables.globalConfig.globalFullscreen) {
@@ -596,7 +596,7 @@ export class ZConfigSettings {
                 currentGroupCount++
                 let rX = iconWidth + categoryPadding
                 let rY = titleHeight + categoryPadding + i * 16 + scroll[1].scroll
-                ZRenderLib.drawGUIStringRGBA(drawContext, `${groupName} »`, rX + 4, rY, ...colors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+                ZRenderLib.drawGUIStringRGBA(drawContext, `${groupName.trim()} »`, rX + 4, rY, ...colors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
                 i++
 
                 // Draw sidebar categories
@@ -627,7 +627,7 @@ export class ZConfigSettings {
                         ZRenderLib.drawRoundedRectRGBA(drawContext, rX, rrY - 2, categoryWidth - categoryPadding * 3, 14, 4, ...hoverColor)
                     }
                     let textColor = isSelected ? colors.text : colors.secondaryText
-                    ZRenderLib.drawGUIStringRGBA(drawContext, `» ${categoryName}`, rrX, rrY + 1, ...textColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+                    ZRenderLib.drawGUIStringRGBA(drawContext, `» ${categoryName.trim()}`, rrX, rrY + 1, ...textColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
                     i++
                 })
 
@@ -684,7 +684,7 @@ export class ZConfigSettings {
             // Draw category title
             ZRenderLib.drawRoundedRectRGBA(drawContext, iconWidth + categoryWidth + paddingX + insetSpacing, titleHeight + paddingY + scroll[0].scroll - insetSpacing, boxWidth - insetSpacing, 13 + doubleInsetSpacing, 4, ...colors.primary)
             ZRenderLib.drawRoundedRectRGBA(drawContext, iconWidth + categoryWidth + paddingX + doubleInsetSpacing, titleHeight + paddingY + scroll[0].scroll, boxWidth - doubleInsetSpacing - insetSpacing, 13, 3, ...colors.dark)
-            ZRenderLib.drawGUIStringRGBA(drawContext, this.selectedCategory[0],
+            ZRenderLib.drawGUIStringRGBA(drawContext, this.selectedCategory[0].trim(),
                 iconWidth + categoryWidth + paddingX + boxWidth / 2 - (ZRenderLib.getStringWidth(this.selectedCategory[0]) / 2),
                 titleHeight + paddingY + scroll[0].scroll + 3,
                 ...colors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1
@@ -695,6 +695,7 @@ export class ZConfigSettings {
             if (this.selectedCategory[1].description) {
                 let descriptionLines = Utils.splitIntoLines(this.selectedCategory[1].description, boxWidth - 4)
                 for (let line of descriptionLines) {
+                    line = line.trim()
                     const y = titleHeight + paddingY + 14 + 4 + i * 12 + scroll[0].scroll
                     const x = (iconWidth + categoryWidth) + paddingX + (boxWidth - ZRenderLib.getStringWidth(line)) / 2
                     // const x = iconWidth + categoryWidth + paddingX + 2
@@ -722,6 +723,7 @@ export class ZConfigSettings {
                 }
                 return 0
             }).forEach(([subcategoryName, subCategoryData]) => {
+                subcategoryName = subcategoryName.trim()
                 rY = titleHeight + paddingY + i * 12 + scroll[0].scroll
 
                 // if all settings in subcategory are hidden, skip
@@ -746,6 +748,7 @@ export class ZConfigSettings {
                 if (subcategoryName !== "default" && subCategoryData.description && !this.selectedSettings) {
                     let descriptionLines = Utils.splitIntoLines(subCategoryData.description, boxWidth - 4)
                     for (let line of descriptionLines) {
+                        line = line.trim()
                         const y = titleHeight + paddingY + i * 12 + scroll[0].scroll
                         // const x = rx + 2
                         const x = rX + boxWidth / 2 - ZRenderLib.getStringWidth(line) / 2
@@ -822,13 +825,13 @@ export class ZConfigSettings {
                             }
 
                             // Draw setting name
-                            ZRenderLib.drawGUIStringRGBA(drawContext, GetElementName(option), rX + 8, y - 3, ...colors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+                            ZRenderLib.drawGUIStringRGBA(drawContext, GetElementName(option).trim(), rX + 8, y - 3, ...colors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
                             i += 0.5
 
                             // Draw setting description
                             for (let line of lines) {
                                 if (line) {
-                                    ZRenderLib.drawGUIStringRGBA(drawContext, line, rX + 8, titleHeight + paddingY + i * 12 + scroll[0].scroll + 4, ...colors.secondaryText, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+                                    ZRenderLib.drawGUIStringRGBA(drawContext, line.trim(), rX + 8, titleHeight + paddingY + i * 12 + scroll[0].scroll + 4, ...colors.secondaryText, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
                                 }
                                 i++
                             }
