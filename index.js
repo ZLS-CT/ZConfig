@@ -520,7 +520,7 @@ export class ZConfigSettings {
                 ZRenderLib.drawGUIStringRGBA(drawContext, globalSettingsButtonText, sidebarButtonX + (sidebarButtonWidth + 1) / 2 - globalSettingsButtonTextWidth / 2, lastSidebarButtonY + 2, ...globalSettingsButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
             }
 
-            let showEditHudButton = true
+            let showEditHudButton = false
             Object.entries(this.data.groups).forEach(([groupName, groupData]) => {
                 if (groupName == "default") return
                 Object.values(groupData).some(categoryData => {
