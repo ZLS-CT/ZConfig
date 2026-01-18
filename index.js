@@ -107,10 +107,10 @@ export class ZConfigSettings {
         const option = optionOrVarname
 
         if (!option) {
-            throw new Error(`option ${optionOrVarname} does not exist in module ${this.moduleName}`)
+            throw new Error(`option \`${optionOrVarname}\` does not exist in module \`${this.moduleName}\``)
         }
         if (!this.data.allOptions[dependsOnVarname]) {
-            throw new Error(`dependsOn ${dependsOnVarname} does not exist in module ${this.moduleName}`)
+            throw new Error(`dependsOn \`${dependsOnVarname}\` does not exist in module \`${this.moduleName}\``)
         }
 
         option.requires = option.requires || []
@@ -132,7 +132,7 @@ export class ZConfigSettings {
             }
         }
         if (!found) {
-            throw new Error(`Category ${categoryName} does not exist in module ${this.moduleName}`)
+            throw new Error(`Category \`${categoryName}\` does not exist in module \`${this.moduleName}\``)
         }
         return this
     }
@@ -153,7 +153,7 @@ export class ZConfigSettings {
             }
         }
         if (!found) {
-            throw new Error(`Subcategory ${subcategoryName} does not exist in module ${this.moduleName}`)
+            throw new Error(`Subcategory \`${subcategoryName}\` does not exist in module \`${this.moduleName}\``)
         }
         return this
     }
