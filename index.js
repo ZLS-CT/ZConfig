@@ -1551,4 +1551,4 @@ export class ZConfigSettings {
         })
     }
 }
-export default Settings
+export default ZConfigSettings
