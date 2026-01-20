@@ -1,0 +1,10 @@
+{
+  "name": "ZConfigExample",
+  "creator": "Nvidia2080Ti (Zephy)",
+  "description": "Example for ZConfig module.",
+  "version": "1.0.0",
+  "entry": "example.js",
+  "requires": [
+    "ZConfig"
+  ]
+}

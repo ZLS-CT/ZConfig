@@ -1,7 +1,7 @@
-import { Settings } from "../ZConfig/index.js"
+import { ZConfigSettings } from "../ZConfig/index.js"
 import * as ZRenderLib from "../ZRenderLib/index"
 
-const exampleConfig = new Settings("ZConfig Example Settings", "ZConfig", "ZConfigExampleSettings.json")
+const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigExample", "ZConfigExampleSettings.json")
     .command("zconfigexample")
     .addParagraph({
         varname: "simpleNormalParagraph",
@@ -33,13 +33,13 @@ const exampleConfig = new Settings("ZConfig Example Settings", "ZConfig", "ZConf
         name: "Markdown",
         category: "Examples",
         subcategory: "Paragraph",
-        value: FileLib.read("ZConfig", "assets/ExampleMarkdown.md")
+        value: FileLib.read("ZConfig", "ExampleMarkdown.md")
     })
     .addMarkdown({
         varname: "simpleMarkdown",
         group: "Debug",
         name: "Markdown",
-        value: FileLib.read("ZConfig", "assets/ExampleMarkdown.md")
+        value: FileLib.read("ZConfig", "ExampleMarkdown.md")
     })
     .addButton({
         varname: "simpleButton",
@@ -94,7 +94,7 @@ const exampleConfig = new Settings("ZConfig Example Settings", "ZConfig", "ZConf
         subcategory: "Color Picker",
         name: "Color Picker",
         description: "Lets you select an rgb value and alpha value2",
-        allowAlpha: true,
+        alpha: false,
         onValueChanged: (option, oldValue, newValue) => {
             ChatLib.chat(`${option.varname} | Color changed from ${oldValue} to ${newValue}`)
         }
@@ -127,7 +127,7 @@ const exampleConfig = new Settings("ZConfig Example Settings", "ZConfig", "ZConf
             ["§1Line 7", "line7"],
             ["§2Line 8", "line8"],
             ["§3Line 9", "line9"],
-            ["§4Really long line.......", "line10"]
+            ["§4Really long line.......", "line10"],
         ],
         onValueChanged: (option, oldValue, newValue) => {
             ChatLib.chat(`${option.varname} | List changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
@@ -148,7 +148,8 @@ const exampleConfig = new Settings("ZConfig Example Settings", "ZConfig", "ZConf
         ],
         onValueChanged: (option, oldValue, newValue) => {
             ChatLib.chat(`${option.varname} | Dropdown changed from ${oldValue} to ${newValue}`)
-        }
+        },
+        placeholder: 2,
     })
     .addSelection({
         varname: "simpleSelection",
@@ -348,12 +349,31 @@ const exampleConfig = new Settings("ZConfig Example Settings", "ZConfig", "ZConf
         }
     })
     .addKeybind({
-        varname: "simpleKeybind",
+        varname: "simpleKeybind1",
         group: "Debug",
         category: "Examples",
         subcategory: "Keybind Input",
         name: "Keybind Input",
         description: "Lets you select a keybind, value in code is the keycode for the key or the mouse button -100 for mouse binds (https://gist.github.com/Mumfrey/5cfc3b7e14fef91b6fa56470dc05218a)",
+        onPress: () => {
+            ChatLib.chat("Hello!")
+            Client.currentGui.close()
+        },
+        onValueChanged: (option, oldValue, newValue) => {
+            ChatLib.chat(`${option.varname} | Keybind changed from ${oldValue} to ${newValue}`)
+        },
+    })
+    .addKeybind({
+        varname: "simpleKeybind2",
+        group: "Debug",
+        category: "Examples",
+        subcategory: "Keybind Input",
+        name: "Keybind Input",
+        description: "Lets you select a keybind, value in code is the keycode for the key or the mouse button -100 for mouse binds (https://gist.github.com/Mumfrey/5cfc3b7e14fef91b6fa56470dc05218a)",
+        showActivateInMenusToggle: true,
+        extraPersistent: {
+            activateInMenus: true,
+        },
         onPress: () => {
             ChatLib.chat("Hello!")
             Client.currentGui.close()
