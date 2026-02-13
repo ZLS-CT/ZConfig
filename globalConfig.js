@@ -233,6 +233,10 @@ function Command_HandleImportPreset(encodedPreset, overwrite) {
 }
 function Command_HandleExportPreset(presetName) {
     const presetData = Variables.GetPresetDataFromName(presetName)
+    if (!presetData) {
+        ChatMessage(`&7[&aZConfig&7] &6-> &cPreset &7\`&e${presetName}&7\`&c not found!`)
+        return
+    }
     const shortenPresetData = {
         0: presetData.primary.map(Math.round),
         1: presetData.secondary.map(Math.round),
@@ -261,8 +265,21 @@ function Command_HandleListPresets() {
     presetNames.forEach((presetName) => {
         textComponent
             .withText("\n")
+            .withText(`  &7-> &6${presetName} `)
             .withTextObject({
-                text: `  &7-> &6${presetName}`,
+                text: `&6[Export]`,
+                clickEvent: {
+                    action: "run_command",
+                    value: `/zconfigpreset export ${presetName}`
+                },
+                hoverEvent: {
+                    action: "show_text",
+                    value: `&6Export Preset ${presetName}`
+                },
+            })
+            .withText(" ")
+            .withTextObject({
+                text: `&6[Delete]`,
                 clickEvent: {
                     action: "run_command",
                     value: `/zconfigpreset delete ${presetName}`

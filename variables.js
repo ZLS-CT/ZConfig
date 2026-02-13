@@ -96,10 +96,9 @@ export const GetPresetNameFromIndex = (presetIndex) => {
 }
 export const GetPresetDataFromName = (presetName) => {
     const allPresets = GetAllPresets()
-    try {
-        return allPresets[presetName]
-    } catch (e) {}
-    return allPresets["Default"]
+    const presetData = allPresets[presetName]
+    if (presetData) return presetData
+    return null
 }
 
 export const inputs = {}
