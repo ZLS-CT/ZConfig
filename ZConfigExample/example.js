@@ -33,13 +33,13 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
         name: "Markdown",
         category: "Examples",
         subcategory: "Paragraph",
-        value: FileLib.read("ZConfig", "ExampleMarkdown.md")
+        value: FileLib.read("ZConfigExample", "ExampleMarkdown.md")
     })
     .addMarkdown({
         varname: "simpleMarkdown",
         group: "Debug",
         name: "Markdown",
-        value: FileLib.read("ZConfig", "ExampleMarkdown.md")
+        value: FileLib.read("ZConfigExample", "ExampleMarkdown.md")
     })
     .addButton({
         varname: "simpleButton",
@@ -384,7 +384,7 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
     })
 
     .addDependency("simpleMultiCheckbox", "simpleToggle3", true)
-    .addDependency("simpleKeybind", "simpleDecimalSlider", (value) => value > 25.0)
+    .addDependency("simpleKeybind1", "simpleDecimalSlider", (value) => value > 25.0)
     .addGroupSorter((a, b) => {
         return a.name.localeCompare(b.name)
     })
