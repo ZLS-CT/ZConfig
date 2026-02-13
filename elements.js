@@ -314,7 +314,7 @@ export const drawButton = (drawContext, mx, my, x, y, width, option, mouseOver) 
 
     // Handle click
     if (mouseOver && Utils.isMouseButtonClicked(0) && option.onPress) {
-        option.onPress()
+        option.onPress(option)
     }
 }
 
