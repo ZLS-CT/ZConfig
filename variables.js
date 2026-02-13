@@ -65,6 +65,43 @@ export const colorPresets = {
     },
 }
 
+export const GetCustomPresets = () => {
+    const customPresetMap = {}
+    const presetFolder = new java.io.File(`${modulesFolder}/${moduleName}/ColorPresets/`)
+    if (!presetFolder.exists()) {
+        return customPresetMap
+    }
+
+    const files = presetFolder.listFiles()
+    files.forEach(file => {
+        if (!(file.isFile() && file.getName().endsWith(".json"))) return
+        try {
+            customPresetMap[file.getName().replace(".json", "")] = JSON.parse(FileLib.read(`${modulesFolder}/${moduleName}/ColorPresets/${file.getName()}`))
+        } catch (e) { }
+    })
+    return customPresetMap
+}
+export const GetCustomPresetNames = () => {
+    return Object.keys(GetCustomPresets())
+}
+
+export const GetAllPresets = () => {
+    return { ...colorPresets, ...GetCustomPresets() }
+}
+export const GetPresetNameFromIndex = (presetIndex) => {
+    try {
+        return Object.keys(GetAllPresets())[presetIndex]
+    } catch (e) {}
+    return "Default"
+}
+export const GetPresetDataFromName = (presetName) => {
+    const allPresets = GetAllPresets()
+    try {
+        return allPresets[presetName]
+    } catch (e) {}
+    return allPresets["Default"]
+}
+
 export const inputs = {}
 export let shouldClick = new ExportableValue(false)
 export let globalColors = new ExportableValue(colorPresets["Default"])

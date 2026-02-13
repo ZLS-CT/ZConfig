@@ -1,9 +1,22 @@
 import { ZConfigSettings } from "./index.js"
+import {
+    modulesFolder,
+    registerNewCommand,
+    createCommandHandler,
+    createCommandLiteral,
+    numberToByte,
+    stringToBytes,
+    bytesToString,
+    ZTextComponent,
+    ChatMessage,
+} from "ZCore"
 import * as Variables from "./variables"
 import * as Utils from "./utils"
 
+const { literal: cLiteral, argument: cArgument, string: cString, exec: cExec, bool: cBool, integer: cInteger } = Commands
+
 const SetColorPreset = (presetName) => {
-    const colorPreset = Variables.colorPresets[presetName]
+    const colorPreset = Variables.GetAllPresets()[presetName]
     const primaryColorOption = globalConfig.data.persistent["primaryColor"]
     const secondaryColorOption = globalConfig.data.persistent["secondaryColor"]
     const tertiaryColorOption = globalConfig.data.persistent["tertiaryColor"]
@@ -45,6 +58,299 @@ const SetColorPreset = (presetName) => {
     textColorOption.placeholder = colorPreset.text
     secondaryTextColorOption.placeholder = colorPreset.secondaryText
 }
+
+const SaveColorPreset = (presetName, presetData, overwrite, sendChatMessage) => {
+    if (!presetName) throw "Invalid preset name."
+    if (!presetData) throw "Invalid preset data."
+
+    const outputFolder = new java.io.File(`${modulesFolder}/${Variables.moduleName}/ColorPresets/`)
+    if (!outputFolder.exists()) {
+        outputFolder.mkdirs()
+    }
+
+    const outputFile = new java.io.File(`${outputFolder}/${presetName}.json`)
+    if (FileLib.exists(outputFile) && !overwrite) throw "Preset with name already exists."
+
+    FileLib.write(outputFile, JSON.stringify(presetData, null, 4))
+    RefreshPresets()
+
+    if (!sendChatMessage) return
+    ChatMessage(`&7[&aZConfig&7] &6-> &aSuccessfully saved preset &7\`&e${presetName}&7\`&a!`)
+}
+const DeletePreset = (presetName) => {
+    const presetData = Variables.GetPresetDataFromName(presetName)
+    if (!presetData) {
+        ChatMessage(`&7[&aZConfig&7] &6-> &cPreset &7\`&e${presetName}&7\`&c not found!`)
+        return
+    }
+
+    const outputFolder = new java.io.File(`${modulesFolder}/${Variables.moduleName}/ColorPresets/`)
+    if (!outputFolder.exists()) {
+        ChatMessage(`&7[&aZConfig&7] &6-> &cPreset folder not found!`)
+        return
+    }
+
+    const outputFile = new java.io.File(`${outputFolder}/${presetName}.json`)
+    if (!FileLib.exists(outputFile)) {
+        ChatMessage(`&7[&aZConfig&7] &6-> &cPreset file not found!`)
+        return
+    }
+
+    FileLib.delete(outputFile)
+    ChatMessage(`&7[&aZConfig&7] &6-> &aSuccessfully deleted preset &7\`&e${presetName}&7\`!`)
+}
+
+const RefreshPresets = () => {
+    globalConfig.data.persistent["globalColorPreset"].options = Object.keys(Variables.GetAllPresets())
+}
+
+export const encodePreset = (presetName, presetData) => {
+    const nameBytes = stringToBytes(presetName)
+    if (nameBytes.length > 255) throw "Preset name too long."
+
+    const totalLen = 1 + nameBytes.length + 40
+    const bytes = java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE, totalLen)
+
+    let i = 0
+    bytes[i++] = numberToByte(nameBytes.length)
+    for (let n = 0; n < nameBytes.length; n++) {
+        bytes[i++] = nameBytes[n]
+    }
+    for (let k = 0; k < 10; k++) {
+        const a = presetData[k]
+        bytes[i++] = numberToByte(a[0])
+        bytes[i++] = numberToByte(a[1])
+        bytes[i++] = numberToByte(a[2])
+        bytes[i++] = numberToByte(a[3])
+    }
+
+    const data = java.util.Base64
+        .getUrlEncoder()
+        .withoutPadding()
+        .encodeToString(bytes)
+
+    return "v1." + data
+}
+export const decodePreset = (str) => {
+    const parts = str.split(".")
+    if (parts[0] != "v1") throw "Invalid preset version."
+
+    const bytes = java.util.Base64.getUrlDecoder().decode(parts[1])
+
+    let i = 0
+    const nameLen = bytes[i++] & 0xff
+    const presetName = bytesToString(bytes, i, nameLen)
+    i += nameLen
+
+    const presetData = {}
+    for (let k = 0; k < 10; k++) {
+        presetData[k] = [
+            bytes[i++] & 0xFF,
+            bytes[i++] & 0xFF,
+            bytes[i++] & 0xFF,
+            bytes[i++] & 0xFF,
+        ]
+    }
+
+    return {
+        presetName,
+        presetData,
+    }
+}
+
+;(function() {
+    const commandName = "zconfigpreset"
+    const commands = {
+        import: {
+            handler: Command_HandleImportPreset,
+            args: [
+                {
+                    name: "presetData",
+                    type: cString,
+                },
+                {
+                    name: "overwrite",
+                    type: cBool,
+                },
+            ],
+        },
+        export: {
+            handler: Command_HandleExportPreset,
+            args: [
+                {
+                    name: "presetName",
+                    type: cString,
+                },
+            ],
+        },
+        list: {
+            handler: Command_HandleListPresets,
+            args: [],
+        },
+        delete: {
+            handler: Command_HandleDeletePreset,
+            args: [
+                {
+                    name: "presetName",
+                    type: cString,
+                },
+            ],
+        },
+    }
+
+    registerNewCommand(
+        commandName,
+        (...args) => { createCommandHandler(commands, ...args) },
+        () => {
+            Object.keys(commands).forEach((literalName) => {
+                if (literalName.startsWith("_")) return
+                createCommandLiteral(commands, literalName)
+            })
+        }, [],
+    )
+})()
+function Command_HandleImportPreset(encodedPreset, overwrite) {
+    try {
+        const decodedPreset = decodePreset(encodedPreset)
+        const shortPresetData = decodedPreset.presetData
+        const presetData = {
+            primary: shortPresetData[0],
+            secondary: shortPresetData[1],
+            tertiary: shortPresetData[2],
+            darker: shortPresetData[3],
+            dark: shortPresetData[4],
+            light: shortPresetData[5],
+            bright: shortPresetData[6],
+            transparent: shortPresetData[7],
+            text: shortPresetData[8],
+            secondaryText: shortPresetData[9],
+        }
+        SaveColorPreset(decodedPreset.presetName, presetData, overwrite, false)
+        ChatMessage(`&7[&aZConfig&7] &6-> &aSuccessfully imported preset &7\`&e${decodedPreset.presetName}&7\`&a!`)
+    } catch (e) {
+        ChatMessage(`&7[&aZConfig&7] &6-> &cFailed to import preset: &7\`${e.message}&7\``)
+    }
+}
+function Command_HandleExportPreset(presetName) {
+    const presetData = Variables.GetPresetDataFromName(presetName)
+    const shortenPresetData = {
+        0: presetData.primary.map(Math.round),
+        1: presetData.secondary.map(Math.round),
+        2: presetData.tertiary.map(Math.round),
+        3: presetData.darker.map(Math.round),
+        4: presetData.dark.map(Math.round),
+        5: presetData.light.map(Math.round),
+        6: presetData.bright.map(Math.round),
+        7: presetData.transparent.map(Math.round),
+        8: presetData.text.map(Math.round),
+        9: presetData.secondaryText.map(Math.round),
+    }
+    const encodedPreset = encodePreset(presetName, shortenPresetData)
+    ChatMessage(`&7[&aZConfig&7] &6-> &aSuccessfully exported preset &7\`&e${presetName}&7\` &ato clipboard!`)
+    Client.copy(`/zconfigimport ${encodedPreset}`)
+}
+function Command_HandleListPresets() {
+    const presetNames = Variables.GetCustomPresetNames()
+    if (presetNames.length == 0) {
+        ChatMessage(`&7[&aZConfig&7] &6-> &eNo custom presets found!`)
+        return
+    }
+
+    const textComponent = new ZTextComponent()
+    textComponent.withText(`&7[&aZConfig&7] &6Custom Presets &7- (&6${presetNames.length}&7)&6:`)
+    presetNames.forEach((presetName) => {
+        textComponent
+            .withText("\n")
+            .withTextObject({
+                text: `  &7-> &6${presetName}`,
+                clickEvent: {
+                    action: "run_command",
+                    value: `/zconfigpreset delete ${presetName}`
+                },
+                hoverEvent: {
+                    action: "show_text",
+                    value: `&6Delete Preset ${presetName}`
+                },
+            })
+    })
+    textComponent.chat()
+}
+function Command_HandleDeletePreset(presetName) {
+    const presetData = Variables.GetPresetDataFromName(presetName)
+    if (!presetData) {
+        ChatMessage(`&7[&aZConfig&7] &6-> &cPreset &7\`&e${presetName}&7\`&c not found!`)
+        return
+    }
+    DeletePreset(presetName)
+}
+
+;(function() {
+    const commandName = "zconfigexportpreset"
+    const commands = {
+        _defaultWithInput: {
+            handler: Command_HandleExportPreset,
+            args: [
+                {
+                    name: "presetName",
+                    type: cString,
+                },
+            ],
+        },
+    }
+
+    registerNewCommand(
+        commandName,
+        (...args) => { createCommandHandler(commands, ...args) },
+        () => {
+            cArgument("presetName", cString(), () => {
+                cExec(({ presetName }) => {
+                    createCommandHandler(commands, "_defaultWithInput", presetName)
+                })
+            })
+        }, [
+            "zconfigexport",
+            "zconfigpresetexport",
+        ],
+    )
+})()
+;(function() {
+    const commandName = "zconfigimportpreset"
+    const commands = {
+        _defaultWithInput: {
+            handler: Command_HandleImportPreset,
+            args: [
+                {
+                    name: "presetData",
+                    type: cString,
+                },
+                {
+                    name: "overwrite",
+                    type: cBool,
+                },
+            ],
+        },
+    }
+
+    registerNewCommand(
+        commandName,
+        (...args) => { createCommandHandler(commands, ...args) },
+        () => {
+            cArgument("presetData", cString(), () => {
+                cArgument("overwrite", cBool(), () => {
+                    cExec(({ presetData, overwrite }) => {
+                        createCommandHandler(commands, "_defaultWithInput", presetData, overwrite)
+                    })
+                })
+                cExec(({ presetData }) => {
+                    createCommandHandler(commands, "_defaultWithInput", presetData, false)
+                })
+            })
+        }, [
+            "zconfigimport",
+            "zconfigpresetimport",
+        ],
+    )
+})()
 
 const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", "ZConfigGlobalSettings.json")
     .command("zconfig")
@@ -91,14 +397,26 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         varname: "globalColorPreset",
         group: "Global",
         category: "Preferences",
-        subcategory: "Options",
+        subcategory: "Presets",
         name: "Color Preset",
         description: "Changes the menu colors to a preset. Modifying individual colors will override this.",
-        options: Object.keys(Variables.colorPresets),
+        options: Object.keys(Variables.GetAllPresets()),
     })
     .registerListener("globalColorPreset", (option, oldValue, newValue) => {
-        SetColorPreset(Object.keys(Variables.colorPresets)[newValue])
+        SetColorPreset(Variables.GetPresetNameFromIndex(newValue))
     })
+    .addButton({
+        varname: "refreshCustomPresets",
+        group: "Global",
+        category: "Preferences",
+        subcategory: "Presets",
+        name: "Refresh Presets",
+        description: "Refreshes the list of color presets.",
+        onPress: () => {
+            RefreshPresets()
+        }
+    })
+
     .addColorPicker({
         varname: "primaryColor",
         description: "Primary menu color",
@@ -197,6 +515,37 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         name: "Reset Colors",
         description: "Resets all colors to their default values",
         onPress: () => {
-            SetColorPreset(Object.keys(Variables.colorPresets)[globalConfig.globalColorPreset])
+            SetColorPreset(Variables.GetPresetNameFromIndex(globalConfig.globalColorPreset))
+        }
+    })
+    .addText({
+        varname: "customColorPresetName",
+        group: "Global",
+        category: "Menu Colors",
+        subcategory: "Custom Presets",
+        name: "Color Preset Name",
+        description: "The name of the custom color preset.",
+    })
+    .addButton({
+        varname: "saveColorPreset",
+        group: "Global",
+        category: "Menu Colors",
+        subcategory: "Custom Presets",
+        name: "Save Color Preset",
+        description: "Saves the current color settings as a preset.",
+        onPress: () => {
+            const currentPreset = {
+                primary: Variables.globalConfig.data.persistent["primaryColor"].value,
+                secondary: Variables.globalConfig.data.persistent["secondaryColor"].value,
+                tertiary: Variables.globalConfig.data.persistent["tertiaryColor"].value,
+                darker: Variables.globalConfig.data.persistent["darkerColor"].value,
+                dark: Variables.globalConfig.data.persistent["darkColor"].value,
+                light: Variables.globalConfig.data.persistent["lightColor"].value,
+                bright: Variables.globalConfig.data.persistent["brightColor"].value,
+                transparent: Variables.globalConfig.data.persistent["transparentColor"].value,
+                text: Variables.globalConfig.data.persistent["textColor"].value,
+                secondaryText: Variables.globalConfig.data.persistent["secondaryTextColor"].value,
+            }
+            SaveColorPreset(globalConfig.customColorPresetName, currentPreset, true, true)
         }
     })
