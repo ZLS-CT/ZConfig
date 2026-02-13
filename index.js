@@ -789,7 +789,7 @@ export class ZConfigSettings {
                     } else if (option.type == "dropdown" || option.type == "checkbox") {
                         if (option.down) {
                             lineOffset += 16 * option.options.length
-                            k += option.options.length + 1.35
+                            k += (1.325 * option.options.length)// + 1.35
                         }
                     } else if (option.type == "button" || option.type == "hud") {
                         lineOffset += 4
