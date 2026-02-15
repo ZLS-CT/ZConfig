@@ -570,7 +570,9 @@ export const drawKeybind = (drawContext, mx, my, x, y, width, option, settingsOb
 }
 
 export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
-    const width = Utils.getLongest(option.options).width
+    const linePrefix = "= "
+    const lineOffsetX = 1 + 4
+    const width = Utils.getLongest(option.options.map(opt => opt[0])).width + (2 * lineOffsetX) + 8 + ZRenderLib.getStringWidth(linePrefix)
     const height = option.options.length * 12 + 4 + 4 + 6
     y -= 8
 
@@ -599,7 +601,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
 
         // Lines
         if (option.clicked?.[0] !== arr[0]) {
-            ZRenderLib.drawGUIStringRGBA(drawContext, "= " + arr[0], x + 5, rY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
+            ZRenderLib.drawGUIStringRGBA(drawContext, linePrefix + arr[0], x + lineOffsetX, rY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
             ZRenderLib.drawGUIStringRGBA(drawContext, "⤬", x + width - 10, rY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
         }
 
