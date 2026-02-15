@@ -527,17 +527,16 @@ export const getLongest = (strArr) => {
 
     let longest = {
         str: "",
-        width: 0
+        width: 0,
     }
-    for (let str of strArr) {
+    strArr.forEach(str => {
         const width = ZRenderLib.getStringWidth(str)
-        if (width > longest.width) {
-            longest = {
-                str: str,
-                width: width
-            }
+        if (width <= longest.width) return
+        longest = {
+            str: str,
+            width: width,
         }
-    }
+    })
     longestStringCache.set(key, longest)
     return longest
 }
@@ -655,7 +654,7 @@ export class TextInput {
                         if (this.pointerIndex < this.text.length) {
                             this.text = this.text.slice(0, this.text.length - this.pointerIndex - 1) + this.text.slice(this.text.length - this.pointerIndex, this.text.length)
                         }
-                        if (ZKeys.isKeyNameDown("KEY_LCONTROL") || ZKeys.isKeyNameDown("KEY_RCONTROL")) {
+                        if (ZKeys.isCtrlDown()) {
                             for (let i = this.text.length - 1; i > -1 && this.text[i] !== " "; i--) {
                                 this.text = this.text.slice(0, i)
                             }
@@ -688,9 +687,8 @@ export class TextInput {
                 this.callOnGuiKey()
             }),
             register("guiClosed", () => {
-                if (this.isActive) {
-                    this.callOnExit()
-                }
+                if (!this.isActive) return
+                this.callOnExit()
             })
         ]
     }
@@ -763,7 +761,7 @@ export class KeybindInput {
         isMouseKey,
         modifiers,
         activateInMenus,
-        onPressCallback
+        onPressCallback,
     ) {
         this.placeholderKeyName = placeholderKeyName
         this.keyName = keyName

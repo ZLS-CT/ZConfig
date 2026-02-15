@@ -643,6 +643,7 @@ export class ZConfigSettings {
 
             // Test Scissor
             // ZRenderLib.drawRectRGBA(drawContext, 0, 0, 1920, 1080, 255, 0, 0, 255)
+
             ZRenderLib.disableScissor(drawContext)
 
             const scrollBarWidth = 8
