@@ -795,7 +795,7 @@ export class ZConfigSettings {
                             lineOffset += 6
                             k += 0.65
                         }
-                        for (let i = 0; i < combinedList.size + listSize; i++) {
+                        for (let i = 0; i < Math.max(4, combinedList.size) + listSize; i++) {
                             lines.push("")
                         }
                     } else if (option.type == "dropdown" || option.type == "checkbox") {
@@ -949,7 +949,7 @@ export class ZConfigSettings {
                                 if (option.extra.editable) {
                                     listSizeOffset = 1
                                 }
-                                Elements.drawUnorderedList(drawContext, mx, my, rX + 6, rrY - 7 - (combinedList.size + listSizeOffset) * 12, option, mouseOver)
+                                Elements.drawUnorderedList(drawContext, mx, my, rX + 6, rrY - 7 - (Math.max(4, combinedList.size) + listSizeOffset) * 12, boxWidth - 8, option, mouseOver)
                             }
                             break
                         case "dropdown":
