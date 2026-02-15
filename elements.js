@@ -707,7 +707,7 @@ export const drawUnorderedList = (drawContext, mx, my, x, y, width, option, mous
     const lineOffsetX = 1 + 4
     const lineOffsetY = 1 + 2
     const boxWidth = Math.max(116, Math.min(width - 2, Utils.getLongest([...combinedList]).width + (2 * lineOffsetX) + 8 + ZRenderLib.getStringWidth(linePrefix)))
-    const height = Math.max(48, combinedList.size * 12 + 2)
+    const height = Math.max(option.extra.minimumHeight * 12, combinedList.size * 12 + 2)
     y -= 8
 
     // Background
