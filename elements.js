@@ -53,12 +53,14 @@ export const drawText = (drawContext, mx, my, x, y, width, option, settingsObjec
         Variables.inputs[option.varname].onGuiKey((text) => {
             Variables.inputs[option.varname].text = text
         })
-        Variables.inputs[option.varname].onExit((text) => {
+        const onExit = (text) => {
             if (option.value == text) return
             const oldValue = JSON.parse(JSON.stringify(option.value))
             option.value = text
             settingsObject.callOnChanged(option, oldValue)
-        })
+        }
+        Variables.inputs[option.varname].onExit = onExit
+        Variables.inputs[option.varname].onEnter = onExit
     }
 
     if (Variables.inputs[option.varname].isActive) {
@@ -264,12 +266,14 @@ export const drawColor = (drawContext, mx, my, x, y, option, settingsObject, mou
             }
         })
 
-        Variables.inputs[option.varname].onExit((text) => {
+        const onExit = (text) => {
             if (text == "" || text == "#") {
                 Variables.inputs[option.varname].value = option.placeholder
             }
             Utils.ResetColorPickerFromRGB(option, option.value)
-        })
+        }
+        Variables.inputs[option.varname].onExit = onExit
+        Variables.inputs[option.varname].onEnter = onExit
     }
 
     if (Utils.isMouseButtonClicked(0, true) && !mouseOver) {
@@ -392,7 +396,7 @@ export const drawSlider = (drawContext, mx, my, x, y, option, settingsObject, mo
 
         input.onGuiKey((text) => input.text = `${text}`)
 
-        input.onExit((text) => {
+        const onExit = (text) => {
             const newValue = parseFloat(text) || minVal
             const oldValue = JSON.parse(JSON.stringify(option.value))
             option.value = normalizeValue(newValue, false)
@@ -401,7 +405,9 @@ export const drawSlider = (drawContext, mx, my, x, y, option, settingsObject, mo
                 input.text = `${option.value}${option.extra.isPercent ? "%" : ""}`
                 settingsObject.callOnChanged(option, oldValue)
             }
-        })
+        }
+        input.onExit = onExit
+        input.onEnter = onExit
     }
 
     // Handle input activation

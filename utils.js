@@ -624,6 +624,7 @@ const numbers = [
 export class TextInput {
     _onGuiKey = []
     _onExit = []
+    _onEnter = []
     pointerIndex = 0
     text = ""
     isActive = false
@@ -647,6 +648,8 @@ export class TextInput {
                 cancel(event)
                 switch (keyCode) {
                     case ZKeys.getKeyCode("KEY_ENTER"):
+                        this.callOnEnter()
+                        break
                     case ZKeys.getKeyCode("KEY_ESCAPE"):
                         this.callOnExit()
                         break
@@ -732,6 +735,14 @@ export class TextInput {
         if (!this.isActive) return
         this.isActive = false
         this._onExit.forEach(cb => cb(this.text))
+    }
+    onEnter(cb) {
+        this._onEnter.push(cb)
+    }
+    callOnEnter() {
+        if (!this.isActive) return
+        this.isActive = false
+        this._onEnter.forEach(cb => cb(this.text))
     }
     deconstruct() {
         this.regs.forEach(reg => reg.unregister())
