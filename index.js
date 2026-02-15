@@ -793,7 +793,7 @@ export class ZConfigSettings {
                         if (option.extra.editable) {
                             listSize = 0
                             lineOffset += 6
-                            k += 0.65
+                            k += 0.55
                         }
                         for (let i = 0; i < Math.max(option.extra.minimumHeight, combinedList.size) + listSize; i++) {
                             lines.push("")
