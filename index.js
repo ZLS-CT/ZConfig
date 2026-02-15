@@ -787,6 +787,17 @@ export class ZConfigSettings {
                         k += 0.35
                     } else if (option.type == "list") {
                         option.options.slice().forEach(() => lines.push(""))
+                    } else if (option.type == "unorderedList") {
+                        let combinedList = new Set([...option.options, ...option.value])
+                        let listSize = -1
+                        if (option.extra.editable) {
+                            listSize = 0
+                            lineOffset += 6
+                            k += 0.65
+                        }
+                        for (let i = 0; i < combinedList.size + listSize; i++) {
+                            lines.push("")
+                        }
                     } else if (option.type == "dropdown" || option.type == "checkbox") {
                         if (option.down) {
                             lineOffset += 16 * option.options.length
@@ -929,6 +940,16 @@ export class ZConfigSettings {
                         case "list":
                             if (inViewport) {
                                 Elements.drawList(drawContext, mx, my, rX + 6, rrY - 7 - option.options.length * 12, option, mouseOver)
+                            }
+                            break
+                        case "unorderedList":
+                            if (inViewport) {
+                                let combinedList = new Set([...option.options, ...option.value])
+                                let listSizeOffset = -1
+                                if (option.extra.editable) {
+                                    listSizeOffset = 1
+                                }
+                                Elements.drawUnorderedList(drawContext, mx, my, rX + 6, rrY - 7 - (combinedList.size + listSizeOffset) * 12, option, mouseOver)
                             }
                             break
                         case "dropdown":
@@ -1356,6 +1377,29 @@ export class ZConfigSettings {
             data.value[arr[1]] = i
         })
         this._addOption(data)
+        return this
+    }
+    addUnorderedList = (data) => {
+        data.type = "unorderedList"
+        if (!data.options) {
+            throw new Error("List cannot be initialized without options")
+        }
+        if (!data.placeholder) {
+            data.placeholder = JSON.parse(JSON.stringify(data.options)) || []
+        }
+        if (!data.value) {
+            data.value = JSON.parse(JSON.stringify(data.placeholder))
+        }
+        if (!data.extra) {
+            data.extra = {
+                editable: data.editable ?? true,
+            }
+        }
+        this._addOption(data)
+        return this
+    }
+    addCustomList = (data) => {
+        this.addUnorderedList(data)
         return this
     }
     addCheckbox = (data) => {

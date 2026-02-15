@@ -133,6 +133,58 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
             ChatLib.chat(`${option.varname} | List changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
         }
     })
+    .addUnorderedList({
+        varname: "simpleUnorderedList1",
+        group: "Debug",
+        category: "Examples",
+        subcategory: "Unordered List",
+        name: "Editable Unordered List",
+        description: 'Shows the user an editable unorderable list option to add new list items.',
+        options: [
+            "§aLine 1",
+            "§bLine 2",
+            "§cLine 3",
+            "§dLine 4",
+            "§eLine 5",
+            "§fLine 6",
+            "§1Line 7",
+            "§2Line 8",
+            "§3Line 9",
+            "§4Really long line.......",
+        ],
+        extra: {
+            editable: true,
+        },
+        onValueChanged: (option, oldValue, newValue) => {
+            ChatLib.chat(`${option.varname} | Unorderable list changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
+        }
+    })
+    .addUnorderedList({
+        varname: "simpleUnorderedList2",
+        group: "Debug",
+        category: "Examples",
+        subcategory: "Unordered List",
+        name: "Uneditable Unordered List",
+        description: 'Shows the user an uneditable unorderable list option to add new list items.',
+        options: [
+            "§aLine 1",
+            "§bLine 2",
+            "§cLine 3",
+            "§dLine 4",
+            "§eLine 5",
+            "§fLine 6",
+            "§1Line 7",
+            "§2Line 8",
+            "§3Line 9",
+            "§4Really long line.......",
+        ],
+        extra: {
+            editable: false,
+        },
+        onValueChanged: (option, oldValue, newValue) => {
+            ChatLib.chat(`${option.varname} | Unorderable list changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
+        }
+    })
     .addDropDown({
         varname: "simpleDropdown",
         group: "Debug",

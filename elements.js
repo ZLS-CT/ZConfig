@@ -682,6 +682,100 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
         option.addMenuOpen = false
     }
 }
+export const drawUnorderedList = (drawContext, mx, my, x, y, option, mouseOver) => {
+    const TryAddNewListValue = () => {
+        const newValue = Variables.inputs[option.varname].text
+        if (newValue == "") return
+        if (option.value.includes(newValue)) return
+        Variables.inputs[option.varname].text = ""
+        option.value.push(newValue)
+        option.changed = true
+    }
+    if (!Variables.inputs[option.varname]) {
+        Variables.inputs[option.varname] = new Utils.TextInput("Type here...", true, false, false)
+        Variables.inputs[option.varname].onGuiKey((text) => {
+            Variables.inputs[option.varname].text = text
+        })
+
+        Variables.inputs[option.varname].onEnter((text) => {
+            TryAddNewListValue()
+        })
+    }
+
+    const combinedList = new Set([...option.options, ...option.value])
+    const linePrefix = "- "
+    const lineOffsetX = 1 + 4
+    const lineOffsetY = 1 + 2
+    const width = Utils.getLongest(combinedList).width + (2 * lineOffsetX) + 8 + ZRenderLib.getStringWidth(linePrefix)
+    const height = combinedList.size * 12 + 2
+    y -= 8
+
+    // Background
+    ZRenderLib.drawRectRGBA(drawContext, x, y, width, height, ...Variables.globalColors.primary)
+    ZRenderLib.drawRectRGBA(drawContext, x + 1, y + 1, width - 2, height - 2, ...Variables.globalColors.dark)
+
+    option.value.forEach((line, index) => {
+        let rY = y + index * 12 + lineOffsetY
+
+        // Hover hightlight
+        if (Utils.isMouseover(mx, my, x + 1, rY - 2, width - 2, 12)) {
+            ZRenderLib.drawRectRGBA(drawContext, x + 1, rY - 2, width - 2, 12, ...Variables.globalColors.light)
+        }
+
+        // Lines
+        ZRenderLib.drawGUIStringRGBA(drawContext, `${linePrefix}${line}`, x + lineOffsetX, rY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
+        ZRenderLib.drawGUIStringRGBA(drawContext, "⤬", x + width - 10, rY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
+
+        // X Button
+        if (Utils.isMouseover(mx, my, x + width - 12, rY - 1, 10, 10)) {
+            if (Utils.isMouseButtonClicked(0)) {
+                option.old = JSON.parse(JSON.stringify(option.value))
+                option.value.splice(index, 1)
+                option.changed = true
+            }
+        }
+    })
+
+    if (!option.extra.editable) return
+
+    const buttonLabel = "Add"
+    const buttonLabelWidth = ZRenderLib.getStringWidth(buttonLabel)
+    const buttonWidth = Math.max(Math.min(buttonLabelWidth + 8, width), 16)
+    const buttonHeight = 16
+    const buttonX = x + 1
+    const buttonY = y + height + 1 + 5
+    const buttonTextX = buttonX + (buttonWidth - buttonLabelWidth) / 2
+    const buttonTextY = buttonY + 4
+    const isButtonHover = Utils.isMouseover(mx, my, buttonX, buttonY, buttonWidth, buttonHeight)
+    const buttonColor = isButtonHover ? Variables.globalColors.light : Variables.globalColors.primary
+    ZRenderLib.drawRoundedRectRGBA(drawContext, buttonX - insetSpacing, buttonY - insetSpacing, buttonWidth + doubleInsetSpacing, buttonHeight + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
+    ZRenderLib.drawRoundedRectRGBA(drawContext, buttonX, buttonY, buttonWidth, buttonHeight, 3, ...buttonColor)
+    ZRenderLib.drawGUIStringRGBA(drawContext, buttonLabel, buttonTextX, buttonTextY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+
+    if (isButtonHover && Utils.isMouseButtonClicked(0)) {
+        TryAddNewListValue()
+    }
+
+    const textBoxX = x + 1 + buttonWidth + 8
+    const textBoxY = buttonY + 1
+    const textBoxWidth = Math.min(width, Math.max(80, Variables.inputs[option.varname].getWidth() + 8))
+    const textBoxHeight = 14
+    const isTextBoxHover = Utils.isMouseover(mx, my, textBoxX, textBoxY, textBoxWidth, textBoxHeight)
+
+    if (Variables.inputs[option.varname].isActive) {
+        if (Utils.isMouseButtonClicked(0, true) && !isTextBoxHover) {
+            Variables.inputs[option.varname].callOnExit()
+        }
+    } else if (isTextBoxHover) {
+        if (Utils.isMouseButtonClicked(0)) {
+            Variables.inputs[option.varname].isActive = true
+        }
+    }
+
+    ZRenderLib.drawRoundedRectRGBA(drawContext, textBoxX - insetSpacing, textBoxY - insetSpacing, textBoxWidth + doubleInsetSpacing, textBoxHeight + doubleInsetSpacing, 4, ...Variables.globalColors.primary)
+    ZRenderLib.drawRoundedRectRGBA(drawContext, textBoxX, textBoxY, textBoxWidth, textBoxHeight, 3, ...Variables.globalColors.dark)
+    Variables.inputs[option.varname].draw(drawContext, textBoxX + 2, textBoxY + 1, width, 12)
+}
 export const drawHud = (drawContext, mx, my, x, y, width, option, mouseOver, lastOpenedGUI) => {
     const buttonWidth = Math.min(64, width)
 
