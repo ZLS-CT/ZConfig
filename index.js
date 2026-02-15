@@ -1479,6 +1479,10 @@ export class ZConfigSettings {
             }
         }
     }
+    runInOrder(callback) {
+        callback(this)
+        return this
+    }
     _addOption({
         type,
         name = "Untitled",
