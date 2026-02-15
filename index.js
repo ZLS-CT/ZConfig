@@ -217,6 +217,7 @@ export class ZConfigSettings {
         }
         this.gui = new Gui()
         this.lastOpenedGUI = null
+        this.orderCounter = 0
         this.data = {
             groups: {},
             allOptions: {},
@@ -766,7 +767,7 @@ export class ZConfigSettings {
                     if (this.data.settingSorter) {
                         return this.data.settingSorter(a, b)
                     }
-                    return 0
+                    return a.orderIndex - b.orderIndex
                 }).forEach((option) => {
                     option.changed = false
                     if (this.selectedSettings) return
@@ -1526,7 +1527,9 @@ export class ZConfigSettings {
             throw new Error(`Option with varname ${varname} already exists in module ${this.moduleName}!`)
         }
 
+        const orderIndex = this.orderCounter++
         this.data.groups[group][category]["subcategories"][subcategory]["elements"][varname] = {
+            orderIndex: orderIndex,
             type,
             name,
             description,
