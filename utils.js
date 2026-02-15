@@ -681,6 +681,16 @@ export class TextInput {
                             this.pointerIndex--
                         }
                         break
+                    case ZKeys.getKeyCode("KEY_V"):
+                        if (ZKeys.isCtrlDown()) {
+                            const copiedText = Client.paste()
+                            if (copiedText) {
+                                this.text = this.text.slice(0, this.text.length - this.pointerIndex) + copiedText + this.text.slice(this.text.length - this.pointerIndex, this.text.length)
+                                this.callOnGuiKey()
+                            }
+                            return
+                        }
+                        break
                     default:
                         break
                 }
