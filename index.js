@@ -59,6 +59,10 @@ export class ZConfigSettings {
         register("gameUnload", () => this.data.save())
     }
 
+    isOpen() {
+        return this.gui.isOpen() || Variables.globalConfig.gui.isOpen()
+    }
+
     IsElementHidden = (element) => {
         if (element.hidden) return true
         if (element.hideIf) {
@@ -1604,7 +1608,7 @@ export class ZConfigSettings {
                 this.data.persistent[varname].value = newValue
             },
             enumerable: true,
-            configurable: true
+            configurable: true,
         })
     }
 }
