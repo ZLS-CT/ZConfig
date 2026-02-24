@@ -1,5 +1,6 @@
 import { ZConfigSettings } from "./index.js"
 import {
+    isLegacy,
     modulesFolder,
     registerNewCommand,
     createCommandHandler,
@@ -13,7 +14,16 @@ import {
 import * as Variables from "./variables"
 import * as Utils from "./utils"
 
-const { literal: cLiteral, argument: cArgument, string: cString, exec: cExec, bool: cBool, integer: cInteger } = Commands
+let cLiteral, cArgument, cString, cExec, cBool, cInteger, cGreedyString = null
+if (!isLegacy) {
+    cLiteral = Commands.literal
+    cArgument = Commands.argument
+    cString = Commands.string
+    cExec = Commands.exec
+    cBool = Commands.bool
+    cInteger = Commands.integer
+    cGreedyString = Commands.greedyString
+}
 
 const SetColorPreset = (presetName) => {
     const colorPreset = Variables.GetAllPresets()[presetName]
