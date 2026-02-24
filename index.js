@@ -1,6 +1,6 @@
 import * as ZRenderLib from "../ZRenderLib/index"
 import * as ZKeys from "ZKeys"
-import { modulesFolder } from "ZCore"
+import { modulesFolder, gameVersion } from "ZCore"
 
 import * as Variables from "./variables"
 import * as Utils from "./utils"
@@ -566,11 +566,15 @@ export class ZConfigSettings {
             const dividerWidth = 0.95
             ZRenderLib.drawRectRGBA(drawContext, sidebarButtonX + sidebarButtonWidth * (1 - dividerWidth) / 2, lastSidebarButtonY - sidebarButtonPaddingY, sidebarButtonWidth * dividerWidth, 1, ...colors.bright)
 
+            let scissorYOffset = 0
+            if (gameVersion >= 12109) { // Not sure what version it starts
+                scissorYOffset = 21
+            }
             const sidebarScissorX = iconWidth
             const sidebarScissorY = titleHeight
             const sidebarScissorWidth = categoryWidth
             const sidebarScissorHeight = (lastSidebarButtonY - sidebarButtonPaddingY) - sidebarScissorY
-            ZRenderLib.enableScaledScissor(drawContext, sidebarScissorX, sidebarScissorY, sidebarScissorWidth, sidebarScissorHeight)
+            ZRenderLib.enableScaledScissor(drawContext, sidebarScissorX, sidebarScissorY + scissorYOffset, sidebarScissorWidth, sidebarScissorHeight)
 
             i = 0
             // Draw sidebar groups
