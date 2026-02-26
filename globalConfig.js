@@ -388,7 +388,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         subcategory: "Options",
         name: "Outline On Options",
         description: "Whether an outline is shown around each option to make them easier to distinguish",
-        placeholder: true
+        placeholder: true,
     })
     .addSwitch({
         varname: "globalFullscreen",
@@ -397,7 +397,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         subcategory: "Options",
         name: "Fullscreen Menu",
         description: "Whether the settings menu should be displayed in fullscreen mode",
-        placeholder: false
+        placeholder: false,
     })
     .addSwitch({
         varname: "globalDarkenBackground",
@@ -409,7 +409,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         placeholder: true,
         requires: [
             {"globalFullscreen": false}
-        ]
+        ],
     })
     .addSwitch({
         varname: "globalTextShadow",
@@ -418,7 +418,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         subcategory: "Options",
         name: "Menu Text Shadow",
         description: "Whether the menu text should have a text shadow",
-        placeholder: true
+        placeholder: true,
     })
     .addDropdown({
         varname: "globalColorPreset",
@@ -441,7 +441,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         description: "Refreshes the list of color presets.",
         onPress: () => {
             RefreshPresets()
-        }
+        },
     })
 
     .addColorPicker({
@@ -451,7 +451,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Primary Color",
-        placeholder: [90, 102, 255, 255]
+        placeholder: [90, 102, 255, 255],
     })
     .addColorPicker({
         varname: "secondaryColor",
@@ -460,7 +460,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Secondary Color",
-        placeholder: [13, 13, 13, 255]
+        placeholder: [13, 13, 13, 255],
     })
     .addColorPicker({
         varname: "tertiaryColor",
@@ -469,7 +469,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Tertiary Color",
-        placeholder: [30, 30, 30, 255]
+        placeholder: [30, 30, 30, 255],
     })
     .addColorPicker({
         varname: "darkerColor",
@@ -478,7 +478,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Darker Color",
-        placeholder: [20, 20, 20, 255]
+        placeholder: [20, 20, 20, 255],
     })
     .addColorPicker({
         varname: "darkColor",
@@ -487,7 +487,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Dark Color",
-        placeholder: [51, 51, 51, 255]
+        placeholder: [51, 51, 51, 255],
     })
     .addColorPicker({
         varname: "lightColor",
@@ -496,7 +496,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Light Color",
-        placeholder: [102, 102, 102, 255]
+        placeholder: [102, 102, 102, 255],
     })
     .addColorPicker({
         varname: "brightColor",
@@ -505,7 +505,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Bright Color",
-        placeholder: [127, 127, 127, 255]
+        placeholder: [127, 127, 127, 255],
     })
     .addColorPicker({
         varname: "transparentColor",
@@ -514,7 +514,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Transparent Color",
-        placeholder: [102, 102, 102, 100]
+        placeholder: [102, 102, 102, 100],
     })
     .addColorPicker({
         varname: "textColor",
@@ -523,7 +523,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Text Color",
-        placeholder: [255, 255, 255, 255]
+        placeholder: [255, 255, 255, 255],
     })
     .addColorPicker({
         varname: "secondaryTextColor",
@@ -532,7 +532,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Menu Colors",
         subcategory: "Colors",
         name: "Secondary Text Color",
-        placeholder: [170, 170, 170, 255]
+        placeholder: [170, 170, 170, 255],
     })
     .addButton({
         varname: "resetColorsButton",
@@ -543,7 +543,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         description: "Resets all colors to their default values",
         onPress: () => {
             SetColorPreset(Variables.GetPresetNameFromIndex(globalConfig.globalColorPreset))
-        }
+        },
     })
     .addText({
         varname: "customColorPresetName",
@@ -574,5 +574,5 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
                 secondaryText: Variables.globalConfig.data.persistent["secondaryTextColor"].value,
             }
             SaveColorPreset(globalConfig.customColorPresetName, currentPreset, true, true)
-        }
+        },
     })
