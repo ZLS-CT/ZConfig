@@ -578,7 +578,9 @@ export class ZConfigSettings {
             const sidebarScissorY = titleHeight
             const sidebarScissorWidth = categoryWidth
             const sidebarScissorHeight = (lastSidebarButtonY - sidebarButtonPaddingY) - sidebarScissorY
-            ZRenderLib.enableScaledScissor(drawContext, sidebarScissorX, sidebarScissorY + scissorYOffset, sidebarScissorWidth, sidebarScissorHeight)
+            if (Variables.globalConfig.globalOptionScissor) {
+                ZRenderLib.enableScaledScissor(drawContext, sidebarScissorX, sidebarScissorY + scissorYOffset, sidebarScissorWidth, sidebarScissorHeight)
+            }
 
             i = 0
             // Draw sidebar groups
@@ -650,10 +652,12 @@ export class ZConfigSettings {
             scroll[1].max = Math.max(0, (titleHeight + categoryPadding + (i - 1.5) * 16) - height)
             scroll[1].width = categoryWidth
 
-            // Test Scissor
-            // ZRenderLib.drawRectRGBA(drawContext, 0, 0, 1920, 1080, 255, 0, 0, 255)
+            if (Variables.globalConfig.globalOptionScissor) {
+                // Test Scissor
+                // ZRenderLib.drawRectRGBA(drawContext, 0, 0, 1920, 1080, 255, 0, 0, 255)
 
-            ZRenderLib.disableScissor(drawContext)
+                ZRenderLib.disableScissor(drawContext)
+            }
 
             const scrollBarWidth = 8
             const paddingX = 8
@@ -675,7 +679,9 @@ export class ZConfigSettings {
             const scissorY = guiY
             const scissorWidth = guiWidth
             const scissorHeight = guiHeight
-            ZRenderLib.enableScaledScissor(drawContext, scissorX, scissorY, scissorWidth, scissorHeight)
+            if (Variables.globalConfig.globalOptionScissor) {
+                ZRenderLib.enableScaledScissor(drawContext, scissorX, scissorY, scissorWidth, scissorHeight)
+            }
 
             function isRectInViewport(x, y, width, height) {
                 const x1 = x
@@ -1041,9 +1047,12 @@ export class ZConfigSettings {
                 })
             })
 
-            // Test Scissor
-            // ZRenderLib.drawRectRGBA(drawContext, 0, 0, 1920, 1080, 255, 0, 0, 255)
-            ZRenderLib.disableScissor(drawContext)
+            if (Variables.globalConfig.globalOptionScissor) {
+                // Test Scissor
+                // ZRenderLib.drawRectRGBA(drawContext, 0, 0, 1920, 1080, 255, 0, 0, 255)
+
+                ZRenderLib.disableScissor(drawContext)
+            }
 
             i++
             scroll[0].max = Math.max(0, (i * 12) - (height + doubleInsetSpacing))

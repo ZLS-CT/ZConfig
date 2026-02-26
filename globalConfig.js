@@ -420,6 +420,15 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         description: "Whether the menu text should have a text shadow",
         placeholder: true,
     })
+    .addSwitch({
+        varname: "globalOptionScissor",
+        group: "Global",
+        category: "Preferences",
+        subcategory: "Options",
+        name: "Menu Option Scissor",
+        description: "Whether the menu options should be scissored.\n&cOnly disable this if you experience issues with menu options being cut off.",
+        placeholder: true,
+    })
     .addDropdown({
         varname: "globalColorPreset",
         group: "Global",
