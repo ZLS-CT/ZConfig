@@ -800,7 +800,7 @@ export class KeybindInput {
                 if (!this.isActive) return
                 if (keyCode == ZKeys.getKeyCode("KEY_ESCAPE")) {
                     this.clearModifierDelay()
-                    this.reset()
+                    this.reset("KEY_NONE")
                     cancel(event)
                     PlaySound("gui.button.press", 1, 1)
                     return
@@ -934,9 +934,9 @@ export class KeybindInput {
         this.isActive = false
         this._onChanged.forEach(cb => cb(this.keyName, this.isMouseKey, this.modifiers))
     }
-    reset() {
+    reset(newKeyName = null) {
         this.clearModifierDelay()
-        this.keyName = this.placeholderKeyName
+        this.keyName = newKeyName ?? this.placeholderKeyName
         this.keyCode = ZKeys.getKeyCode(this.keyName)
         this.isMouseKey = false
         this.modifiers = {
