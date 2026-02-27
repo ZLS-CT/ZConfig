@@ -691,6 +691,8 @@ export class TextInput {
                             return
                         }
                         break
+                    case ZKeys.getKeyCode("KEY_SPACE"):
+                        char = " "
                     default:
                         break
                 }
