@@ -212,6 +212,23 @@ export class ZConfigSettings {
         return index
     }
 
+    GetFirstVisibleCategory() {
+        let selectedCategory = null
+        Object.values(this.data.groups).forEach(groupData => {
+            if (selectedCategory) return
+
+            selectedCategory = Object.entries(groupData).find(([categoryName, categoryData]) => {
+                if (!categoryData.subcategories) return false
+                return Object.values(categoryData.subcategories).some(subcategory =>
+                    Object.values(subcategory.elements).some(element => {
+                        return !this.IsElementHidden(element)
+                    })
+                )
+            }) || null
+        })
+        return selectedCategory
+    }
+
     constructor(localModuleName, moduleFolder, settingsFilePath = null, autosaveIntervalMinutes = 2.5) {
         if (localModuleName == Variables.globalConfigName && !Variables.globalConfig) {
             Variables.globalConfig = this
@@ -262,7 +279,7 @@ export class ZConfigSettings {
                 }
             }
             if (!selectedCategory) {
-                selectedCategory = Object.entries(Object.values(this.data.groups)[0])[0]
+                selectedCategory = this.GetFirstVisibleCategory()
             }
             this.selectedCategory = selectedCategory
             this.selectedSettings = null
@@ -290,7 +307,7 @@ export class ZConfigSettings {
             lastSearchQuery = query
 
             if (!query || query.trim() === '') {
-                this.selectedCategory = Object.entries(Object.values(this.data.groups)[0])[0]
+                this.selectedCategory = this.GetFirstVisibleCategory()
                 return
             }
 
