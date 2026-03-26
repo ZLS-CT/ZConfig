@@ -398,15 +398,6 @@ export class ZConfigSettings {
             let titleHeight = 24
             let iconWidth = 0
 
-            const categoryPadding = 6
-            const categoryWidth = Math.max(
-                128,
-                Utils.getLongest(Object.keys(this.data.groups)).width,
-                ...Object.values(this.data.groups).map(
-                    group => Utils.getLongest(Object.keys(group)).width + categoryPadding * 5
-                )
-            )
-
             if (Variables.globalConfig.globalFullscreen) {
                 titleHeight += 1
                 iconWidth += 1
@@ -416,6 +407,15 @@ export class ZConfigSettings {
                 titleHeight = height / 2 - height / 4
                 iconWidth = width / 2 - width / 4
             }
+
+            const categoryPadding = 6
+            const categoryWidth = Math.max(
+                128,
+                Utils.getLongest(Object.keys(this.data.groups)).width,
+                ...Object.values(this.data.groups).map(
+                    group => Utils.getLongest(Object.keys(group)).width + categoryPadding * 5
+                )
+            )
 
             scroll[2].x = 0
             scroll[1].x = iconWidth
@@ -569,18 +569,19 @@ export class ZConfigSettings {
                 let editHudButtonColor = colors.primary
                 let editHudButtonTextColor = colors.text
 
-                // Draw button
-                ZRenderLib.drawRoundedRectRGBA(drawContext, sidebarButtonX - insetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing, 4, ...colors.tertiary)
-                ZRenderLib.drawRoundedRectRGBA(drawContext, sidebarButtonX, lastSidebarButtonY, sidebarButtonWidth + 1, sidebarButtonHeight, 3, ...editHudButtonColor)
-                ZRenderLib.drawGUIStringRGBA(drawContext, editHudText, sidebarButtonX + (sidebarButtonWidth + 1) / 2 - editHudTextWidth / 2, lastSidebarButtonY + 2, ...editHudButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
-
                 if (Utils.isMouseover(mx, my, sidebarButtonX - doubleInsetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing)) {
                     editHudButtonColor = colors.light
                     editHudButtonTextColor = ZRenderLib.getRGBAColorList255(ZRenderLib.YELLOW)
                     if (Utils.isMouseButtonClicked(0)) {
                         Hud.openHudGui(currentOpenedGUI)
+                        return
                     }
                 }
+
+                // Draw button
+                ZRenderLib.drawRoundedRectRGBA(drawContext, sidebarButtonX - insetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing, 4, ...colors.tertiary)
+                ZRenderLib.drawRoundedRectRGBA(drawContext, sidebarButtonX, lastSidebarButtonY, sidebarButtonWidth + 1, sidebarButtonHeight, 3, ...editHudButtonColor)
+                ZRenderLib.drawGUIStringRGBA(drawContext, editHudText, sidebarButtonX + (sidebarButtonWidth + 1) / 2 - editHudTextWidth / 2, lastSidebarButtonY + 2, ...editHudButtonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
             }
 
             // Draw button divider
@@ -737,8 +738,8 @@ export class ZConfigSettings {
                 }
                 i += 0.15
             }
-
             i += 1.6
+
             const settingsWidth = Math.min(width / 5 * 4, 600)
             if (this.selectedSettings) {
                 boxWidth = settingsWidth - paddingX * 2
