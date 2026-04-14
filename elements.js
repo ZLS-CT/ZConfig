@@ -59,8 +59,8 @@ export const drawText = (drawContext, mx, my, x, y, width, option, settingsObjec
             option.value = text
             settingsObject.callOnChanged(option, oldValue)
         }
-        Variables.inputs[option.varname].onExit = onExit
-        Variables.inputs[option.varname].onEnter = onExit
+        Variables.inputs[option.varname].onExit(onExit)
+        Variables.inputs[option.varname].onEnter(onExit)
     }
 
     if (Variables.inputs[option.varname].isActive) {
@@ -272,8 +272,8 @@ export const drawColor = (drawContext, mx, my, x, y, option, settingsObject, mou
             }
             Utils.ResetColorPickerFromRGB(option, option.value)
         }
-        Variables.inputs[option.varname].onExit = onExit
-        Variables.inputs[option.varname].onEnter = onExit
+        Variables.inputs[option.varname].onExit(onExit)
+        Variables.inputs[option.varname].onEnter(onExit)
     }
 
     if (Utils.isMouseButtonClicked(0, true) && !mouseOver) {
@@ -406,8 +406,8 @@ export const drawSlider = (drawContext, mx, my, x, y, option, settingsObject, mo
                 settingsObject.callOnChanged(option, oldValue)
             }
         }
-        input.onExit = onExit
-        input.onEnter = onExit
+        input.onExit(onExit)
+        input.onEnter(onExit)
     }
 
     // Handle input activation
