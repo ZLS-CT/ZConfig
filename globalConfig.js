@@ -426,7 +426,7 @@ const globalConfig = new ZConfigSettings(Variables.globalConfigName, "ZConfig", 
         category: "Preferences",
         subcategory: "Options",
         name: "Menu Option Scissor",
-        description: "Whether the menu options should be scissored.\n&cOnly disable this if you experience issues with menu options being cut off.",
+        description: "Whether the menu options should be scissored.\n§cOnly disable this if you experience issues with menu options being cut off.",
         placeholder: true,
     })
     .addDropdown({
