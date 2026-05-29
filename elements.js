@@ -800,14 +800,17 @@ export const drawHud = (drawContext, mx, my, x, y, width, option, mouseOver, las
 
 export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
     const progress = Utils.lerp(option.progress, option.down ? 1 : 0, option.time, 100)
-    const w = Math.max(80, Utils.getLongest(option.options).width + 24)
+    const w = Math.max(80, Utils.getLongest(option.options.map(([_, prettyName]) => prettyName)).width + 24)
 
     // Draw option outline
     ZRenderLib.drawRoundedRectRGBA(drawContext, x - insetSpacing, y - insetSpacing, w + doubleInsetSpacing, 16 * (option.down ? option.options.length + 1 : 1) * (progress || 1) + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
 
     // Draw option outline
+    const selectedLabel = option.value.length == 0 ? "None"
+        : option.value.length > 1 ? "... (" + option.value.length + ")"
+        : option.options.find(([_, varName]) => varName === option.value[0])?.[0] ?? option.value[0]
     ZRenderLib.drawRoundedRectRGBA(drawContext, x, y, w, 16, 4, ...Variables.globalColors.primary)
-    ZRenderLib.drawGUIStringRGBA(drawContext, option.value.length == 0 ? "None" : option.value.length > 1 ? "... (" + option.value.length + ")" : option.options[option.value[0]], x + 4, y + 4, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+    ZRenderLib.drawGUIStringRGBA(drawContext, selectedLabel, x + 4, y + 4, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
     ZRenderLib.drawGUIStringRGBA(drawContext, option.down ? "▲" : "▼", x + w - 8, y + 4, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
 
     if (option.down) {
@@ -817,13 +820,13 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
     option.hovered = false
     if (option.down || progress) {
         let ii = 1
-        option.options.forEach((str, i) => {
+        option.options.forEach(([prettyName, varName], i) => {
             let mOver = Utils.isMouseover(mx, my, x, y + ii * 16 * progress, w, 16)
             if (mOver && Utils.isMouseButtonClicked(0)) {
-                if (option.value.includes(ii-1)) {
-                    option.value = option.value.filter(opt => opt !== ii - 1)
+                if (option.value.includes(varName)) {
+                    option.value = option.value.filter(opt => opt !== varName)
                 } else {
-                    option.value.push(ii - 1)
+                    option.value.push(varName)
                 }
                 option.time = Date.now()
                 option.progress = 1
@@ -852,14 +855,14 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
             ZRenderLib.drawRectRGBA(drawContext, x, y + ii * 16 * progress, w, 1, ...Variables.globalColors.primary)
 
             // Draw currently selected square
-            if (option.value.includes(ii - 1)) {
+            if (option.value.includes(varName)) {
                 ZRenderLib.drawRoundedRectRGBA(drawContext, x + 3, y + 3 + ii * 16 * progress, 10, 10, 3, ...Variables.globalColors.primary)
                 ZRenderLib.drawGUIStringRGBA(drawContext, "§l✓", x + 5, y + 3 + ii * 16 * progress, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
             }
 
             // Draw option text
             if (progress > 0.9) {
-                ZRenderLib.drawGUIStringRGBA(drawContext, str, x + 16, y + 5 + ii * 16 * progress, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+                ZRenderLib.drawGUIStringRGBA(drawContext, prettyName, x + 16, y + 5 + ii * 16 * progress, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
             }
             ii++
         })
