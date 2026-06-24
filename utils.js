@@ -1,11 +1,7 @@
 import * as ZRenderLib from "../ZRenderLib/index"
 import * as ZKeys from "ZKeys"
-import { StartDelayedCallback, DeleteDelayedCallback, isLegacy, ChatMessage } from "ZCore"
+import { ChatMessage, StartDelayedCallback, DeleteDelayedCallback, isLegacy, isZJS, isFork } from "ZCore"
 import * as Variables from "./variables"
-
-const Desktop = Java.type('java.awt.Desktop')
-const URI = Java.type('java.net.URI')
-const Color = Java.type("java.awt.Color")
 
 const colorCache = new Map()
 const longestStringCache = new Map()
@@ -56,11 +52,20 @@ export const PlaySound = (name, volume = 1, pitch = 1) => {
         World.playSound(soundMapping[0], volume, pitch)
         return
     }
-    new Sound({
-        source: soundMapping[1],
-        volume: volume,
-        pitch: pitch,
-    }).play()
+
+    if (isZJS) {
+        new ZSound({
+            source: soundMapping[1],
+            volume: volume,
+            pitch: pitch,
+        }).play()
+    } else {
+        new CTSound({
+            source: soundMapping[1],
+            volume: volume,
+            pitch: pitch,
+        }).play()
+    }
 }
 
 let mouseButtonClicked = {}
@@ -126,7 +131,7 @@ export const FixGUIRenderValues = (drawContext, mx, my, partialTicks) => {
         ]
     }
 
-    if (ZRenderLib.isFork) {
+    if (isZJS || isFork) {
         return [
             drawContext, // drawContext
             mx, // mx

@@ -73,12 +73,12 @@ const SaveColorPreset = (presetName, presetData, overwrite, sendChatMessage) => 
     if (!presetName) throw "Invalid preset name."
     if (!presetData) throw "Invalid preset data."
 
-    const outputFolder = new java.io.File(`${modulesFolder}/${Variables.moduleName}/ColorPresets/`)
+    const outputFolder = new File(`${modulesFolder}/${Variables.moduleName}/ColorPresets/`)
     if (!outputFolder.exists()) {
         outputFolder.mkdirs()
     }
 
-    const outputFile = new java.io.File(`${outputFolder}/${presetName}.json`)
+    const outputFile = new File(`${outputFolder}/${presetName}.json`)
     if (FileLib.exists(outputFile) && !overwrite) throw "Preset with name already exists."
 
     FileLib.write(outputFile, JSON.stringify(presetData, null, 4))
@@ -94,13 +94,13 @@ const DeletePreset = (presetName) => {
         return
     }
 
-    const outputFolder = new java.io.File(`${modulesFolder}/${Variables.moduleName}/ColorPresets/`)
+    const outputFolder = new File(`${modulesFolder}/${Variables.moduleName}/ColorPresets/`)
     if (!outputFolder.exists()) {
         ChatMessage(`&7[&aZConfig&7] &6-> &cPreset folder not found!`)
         return
     }
 
-    const outputFile = new java.io.File(`${outputFolder}/${presetName}.json`)
+    const outputFile = new File(`${outputFolder}/${presetName}.json`)
     if (!FileLib.exists(outputFile)) {
         ChatMessage(`&7[&aZConfig&7] &6-> &cPreset file not found!`)
         return
@@ -119,7 +119,7 @@ export const encodePreset = (presetName, presetData) => {
     if (nameBytes.length > 255) throw "Preset name too long."
 
     const totalLen = 1 + nameBytes.length + 40
-    const bytes = java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE, totalLen)
+    const bytes = JavaArray.newInstance(Byte.TYPE, totalLen)
 
     let i = 0
     bytes[i++] = numberToByte(nameBytes.length)
@@ -134,7 +134,7 @@ export const encodePreset = (presetName, presetData) => {
         bytes[i++] = numberToByte(a[3])
     }
 
-    const data = java.util.Base64
+    const data = Base64
         .getUrlEncoder()
         .withoutPadding()
         .encodeToString(bytes)
@@ -145,7 +145,7 @@ export const decodePreset = (str) => {
     const parts = str.split(".")
     if (parts[0] != "v1") throw "Invalid preset version."
 
-    const bytes = java.util.Base64.getUrlDecoder().decode(parts[1])
+    const bytes = Base64.getUrlDecoder().decode(parts[1])
 
     let i = 0
     const nameLen = bytes[i++] & 0xff

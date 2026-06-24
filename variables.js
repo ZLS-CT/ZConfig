@@ -67,7 +67,7 @@ export const colorPresets = {
 
 export const GetCustomPresets = () => {
     const customPresetMap = {}
-    const presetFolder = new java.io.File(`${modulesFolder}/${moduleName}/ColorPresets/`)
+    const presetFolder = new JavaFile(`${modulesFolder}/${moduleName}/ColorPresets/`)
     if (!presetFolder.exists()) {
         return customPresetMap
     }
