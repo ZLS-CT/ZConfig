@@ -857,7 +857,7 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
             // Draw currently selected square
             if (option.value.includes(varName)) {
                 ZRenderLib.drawRoundedRectRGBA(drawContext, x + 3, y + 3 + ii * 16 * progress, 10, 10, 3, ...Variables.globalColors.primary)
-                ZRenderLib.drawGUIStringRGBA(drawContext, "§l✓", x + 5, y + 3 + ii * 16 * progress, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+                ZRenderLib.drawGUIStringRGBA(drawContext, "§l✓", x + 6, y + 3 + ii * 16 * progress, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
             }
 
             // Draw option text
