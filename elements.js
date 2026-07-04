@@ -800,7 +800,7 @@ export const drawHud = (drawContext, mx, my, x, y, width, option, mouseOver, las
 
 export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
     const progress = Utils.lerp(option.progress, option.down ? 1 : 0, option.time, 100)
-    const w = Math.max(80, Utils.getLongest(option.options.map(([_, prettyName]) => prettyName)).width + 24)
+    const w = Math.max(80, Utils.getLongest(option.options.map(([prettyName, _]) => prettyName)).width + 24)
 
     // Draw option outline
     ZRenderLib.drawRoundedRectRGBA(drawContext, x - insetSpacing, y - insetSpacing, w + doubleInsetSpacing, 16 * (option.down ? option.options.length + 1 : 1) * (progress || 1) + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
