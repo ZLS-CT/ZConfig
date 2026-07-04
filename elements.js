@@ -436,14 +436,10 @@ export const drawDropdown = (drawContext, mx, my, x, y, option, mouseOver) => {
     ZRenderLib.drawRoundedRectRGBA(drawContext, x - insetSpacing, y - insetSpacing, w + doubleInsetSpacing, 16 * (option.down ? option.options.length + 1 : 1) * (progress || 1) + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
 
     // Draw main dropdown box and selected option
-    ZRenderLib.drawRoundedRectRGBA(drawContext, x, y, w, 16, 3, ...Variables.globalColors.primary)
+    let mainFlatCorners = (option.down) ? ZRenderLib.BOTTOM_FLAT_CORNERS : []
+    ZRenderLib.drawRoundedRectRGBA(drawContext, x, y, w, 16, 3, ...Variables.globalColors.primary, mainFlatCorners)
     ZRenderLib.drawGUIStringRGBA(drawContext, option.extra.selection ? option.value : option.options[option.value ?? 0], x + 4, y + 4, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
     ZRenderLib.drawGUIStringRGBA(drawContext, option.down ? "▲" : "▼", x + w - 8, y + 4, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
-
-    // If down, render bottom of top option as a square
-    if (option.down) {
-        ZRenderLib.drawRectRGBA(drawContext, x, y + 14, w, 2, ...Variables.globalColors.primary)
-    }
 
     option.hovered = false
     if (option.down || progress) {
@@ -468,11 +464,8 @@ export const drawDropdown = (drawContext, mx, my, x, y, option, mouseOver) => {
                 hoverColor = Variables.globalColors.dark
             }
 
-            let flatCorners = [ZRenderLib.FlattenRoundedRectCorner.TOP_LEFT, ZRenderLib.FlattenRoundedRectCorner.TOP_RIGHT]
-            if ((i != option.options.length - 1)) {
-                flatCorners.push(ZRenderLib.FlattenRoundedRectCorner.BOTTOM_LEFT, ZRenderLib.FlattenRoundedRectCorner.BOTTOM_RIGHT)
-            }
-            ZRenderLib.drawRoundedRectRGBA(drawContext, x, y + ii * 16 * progress, w, 16, 4, ...hoverColor, flatCorners)
+            let itemFlatCorners = (i == option.options.length - 1) ? ZRenderLib.TOP_FLAT_CORNERS : ZRenderLib.ALL_FLAT_CORNERS
+            ZRenderLib.drawRoundedRectRGBA(drawContext, x, y + ii * 16 * progress, w, 16, 4, ...hoverColor, itemFlatCorners)
 
             // Draw divider line
             ZRenderLib.drawRectRGBA(drawContext, x, y + ii * 16 * progress, w, 1, ...Variables.globalColors.primary)
@@ -809,13 +802,10 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
     const selectedLabel = option.value.length == 0 ? "None"
         : option.value.length > 1 ? "... (" + option.value.length + ")"
         : option.options.find(([_, varName]) => varName === option.value[0])?.[0] ?? option.value[0]
-    ZRenderLib.drawRoundedRectRGBA(drawContext, x, y, w, 16, 4, ...Variables.globalColors.primary)
+    let mainFlatCorners = (option.down) ? ZRenderLib.BOTTOM_FLAT_CORNERS : []
+    ZRenderLib.drawRoundedRectRGBA(drawContext, x, y, w, 16, 4, ...Variables.globalColors.primary, mainFlatCorners)
     ZRenderLib.drawGUIStringRGBA(drawContext, selectedLabel, x + 4, y + 4, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
     ZRenderLib.drawGUIStringRGBA(drawContext, option.down ? "▲" : "▼", x + w - 8, y + 4, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
-
-    if (option.down) {
-        ZRenderLib.drawRectRGBA(drawContext, x, y + 14, w, 2, ...Variables.globalColors.primary)
-    }
 
     option.hovered = false
     if (option.down || progress) {
@@ -843,13 +833,9 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
             } else {
                 hoverColor = Variables.globalColors.dark
             }
-            ZRenderLib.drawRoundedRectRGBA(drawContext, x, y + ii * 16 * progress, w, 16, 4, ...hoverColor)
 
-            // Make the option boxes have square tops and bottoms, except for the last one
-            if (i != option.options.length - 1) {
-                ZRenderLib.drawRectRGBA(drawContext, x, y + ii * 16 * progress + 12, w, 4, ...hoverColor)
-            }
-            ZRenderLib.drawRectRGBA(drawContext, x, y + ii * 16 * progress, w, 2, ...hoverColor)
+            let itemFlatCorners = (i == option.options.length - 1) ? ZRenderLib.TOP_FLAT_CORNERS : ZRenderLib.ALL_FLAT_CORNERS
+            ZRenderLib.drawRoundedRectRGBA(drawContext, x, y + ii * 16 * progress, w, 16, 4, ...hoverColor, itemFlatCorners)
 
             // Draw divider line
             ZRenderLib.drawRectRGBA(drawContext, x, y + ii * 16 * progress, w, 1, ...Variables.globalColors.primary)
