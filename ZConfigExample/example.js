@@ -111,7 +111,7 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
         }
     })
     .addList({
-        varname: "simpleList",
+        varname: "simpleList1",
         group: "Debug",
         category: "Examples",
         subcategory: "List",
@@ -129,6 +129,60 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
             ["§3Line 9", "line9"],
             ["§4Really long line.......", "line10"],
         ],
+        onValueChanged: (option, oldValue, newValue) => {
+            ChatLib.chat(`${option.varname} | List changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
+        }
+    })
+    .addList({
+        varname: "simpleList2",
+        group: "Debug",
+        category: "Examples",
+        subcategory: "List",
+        name: "List",
+        description: 'Lets the user reorder a list, specify display lines in options: [["display line 1", "varname"], ["display line 2", "varname"]]',
+        options: [
+            ["§aLine 1", "line1"],
+            ["§bLine 2", "line2"],
+            ["§cLine 3", "line3"],
+            ["§dLine 4", "line4"],
+            ["§eLine 5", "line5"],
+            ["§fLine 6", "line6"],
+            ["§1Line 7", "line7"],
+            ["§2Line 8", "line8"],
+            ["§3Line 9", "line9"],
+            ["§4Really long line.......", "line10"],
+        ],
+        extra: {
+            lineIndices: true,
+        },
+        onValueChanged: (option, oldValue, newValue) => {
+            ChatLib.chat(`${option.varname} | List changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
+        }
+    })
+    .addList({
+        varname: "simpleList3",
+        group: "Debug",
+        category: "Examples",
+        subcategory: "List",
+        name: "List",
+        description: 'Lets the user reorder a list, specify display lines in options: [["display line 1", "varname"], ["display line 2", "varname"]]',
+        options: [
+            ["§aLine 1", "line1"],
+            ["§bLine 2", "line2"],
+            ["§cLine 3", "line3"],
+            ["§dLine 4", "line4"],
+            ["§eLine 5", "line5"],
+            ["§fLine 6", "line6"],
+            ["§1Line 7", "line7"],
+            ["§2Line 8", "line8"],
+            ["§3Line 9", "line9"],
+            ["§4Really long line.......", "line10"],
+        ],
+        extra: {
+            lineIndices: true,
+            editable: true,
+            maxLength: 9,
+        },
         onValueChanged: (option, oldValue, newValue) => {
             ChatLib.chat(`${option.varname} | List changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
         }
@@ -154,6 +208,7 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
         ],
         extra: {
             editable: true,
+            minimumHeight: 1,
         },
         onValueChanged: (option, oldValue, newValue) => {
             ChatLib.chat(`${option.varname} | Unorderable list changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
@@ -179,7 +234,8 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
             "§4Really long line.......",
         ],
         extra: {
-            editable: false,
+            editable: true,
+            minimumHeight: 1,
         },
         onValueChanged: (option, oldValue, newValue) => {
             ChatLib.chat(`${option.varname} | Unorderable list changed from ${JSON.stringify(oldValue)} to ${JSON.stringify(newValue)}`)
@@ -193,10 +249,10 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
         name: "Dropdown",
         description: "Lets you pick from any amount of pre-defined options",
         options: [
-            "Option 1",
-            "Option 2",
-            "Option 3",
-            "Option 4",
+            ["Option 1", "option1"],
+            ["Option 2", "option2"],
+            ["Option 3", "option3"],
+            ["Option 4", "option4"],
         ],
         onValueChanged: (option, oldValue, newValue) => {
             ChatLib.chat(`${option.varname} | Dropdown changed from ${oldValue} to ${newValue}`)
@@ -211,11 +267,11 @@ const exampleConfig = new ZConfigSettings("ZConfig Example Settings", "ZConfigEx
         name: "Selection",
         description: "Like a dropdown but the value is stored as the name of the option",
         options: [
-            "Option 1",
-            "Option 2",
-            "Option 3",
-            "Option 4",
-            "Very long option..........",
+            ["Option 1", "option1"],
+            ["Option 2", "option2"],
+            ["Option 3", "option3"],
+            ["Option 4", "option4"],
+            ["Very long option..........", "veryLongOption"],
         ],
         onValueChanged: (option, oldValue, newValue) => {
             ChatLib.chat(`${option.varname} | Selection changed from ${oldValue} to ${newValue}`)

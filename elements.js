@@ -563,9 +563,19 @@ export const drawKeybind = (drawContext, mx, my, x, y, width, option, settingsOb
 }
 
 export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
-    const linePrefix = "= "
+    let linePrefix = ""
+    let linePrefixWidth = 0
     const lineOffsetX = 1 + 4
-    const width = Utils.getLongest(option.options.map(opt => opt[0])).width + (2 * lineOffsetX) + 8 + ZRenderLib.getStringWidth(linePrefix)
+    if (option.extra.lineIndices) {
+        const maxIndexNum = option.options.filter((_, i) => {
+            return option.value[option.options[i][1]] !== null
+        }).length + 1
+        linePrefixWidth = ZRenderLib.getStringWidth(`${maxIndexNum} §8| §r`)
+    } else {
+        linePrefix = "= "
+        linePrefixWidth = ZRenderLib.getStringWidth(linePrefix)
+    }
+    const width = Math.max(116, Utils.getLongest(option.options.map(opt => opt[0])).width + (2 * lineOffsetX) + 8 + linePrefixWidth)
     const height = option.options.length * 12 + 4 + 4 + 6
     y -= 8
 
@@ -575,16 +585,21 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
     const addButtonX = x + width - 10
     const addButtonY = y + 4
     const addOptions = option.options.filter(opt => option.value[opt[1]] === null)
+    const activeOptions = option.options
+        .filter(opt => option.value[opt[1]] != null)
+        .sort((a, b) => option.value[a[1]] - option.value[b[1]])
+    activeOptions.forEach((opt, index) => {
+        option.value[opt[1]] = index
+    })
+    const isOverLimit = option.extra.maxLength != null && activeOptions.length >= option.extra.maxLength
 
     if (addOptions.length == 0) {
         option.addMenuOpen = false
-    } else {
+    } else if (!isOverLimit) {
         ZRenderLib.drawGUIStringRGBA(drawContext, "+", addButtonX, addButtonY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
     }
 
-    let i = 0
-    for (let arr of option.options) {
-        if (option.value[arr[1]] == null) continue
+    activeOptions.forEach(arr => {
         let rY = y + 3 + (option.value[arr[1]] + 1) * 12
 
         // Hover hightlight
@@ -594,7 +609,8 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
 
         // Lines
         if (option.clicked?.[0] !== arr[0]) {
-            ZRenderLib.drawGUIStringRGBA(drawContext, linePrefix + arr[0], x + lineOffsetX, rY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
+            let realLinePrefix = option.extra.lineIndices ? `${option.value[arr[1]] + 1} §8| §r` : linePrefix
+            ZRenderLib.drawGUIStringRGBA(drawContext, `${realLinePrefix}${arr[0]}`, x + lineOffsetX, rY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
             ZRenderLib.drawGUIStringRGBA(drawContext, "⤬", x + width - 10, rY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
         }
 
@@ -603,12 +619,19 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
                 if (Utils.isMouseButtonClicked(0)) {
                     option.old = JSON.parse(JSON.stringify(option.value))
                     if (Utils.isMouseover(mx, my, x + width - 12, rY - 1, 10, 10)) {
-                        for (let key in option.value) {
-                            if (option.value[key] > option.value[arr[1]]) {
-                                option.value[key] -= 1
+                        const isCustom = option.placeholder && !(arr[1] in option.placeholder)
+                        if (isCustom) {
+                            const optIndex = option.options.findIndex(opt => opt[1] === arr[1])
+                            if (optIndex !== -1) option.options.splice(optIndex, 1)
+                            delete option.value[arr[1]]
+                        } else {
+                            for (let key in option.value) {
+                                if (option.value[key] > option.value[arr[1]]) {
+                                    option.value[key] -= 1
+                                }
                             }
+                            option.value[arr[1]] = null
                         }
-                        option.value[arr[1]] = null
                         option.changed = true
                     } else {
                         option.clicked = arr
@@ -627,8 +650,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
             }
             option.clicked = null
         }
-        i++
-    }
+    })
     if (option.clicked) {
         ZRenderLib.drawGUIStringRGBA(drawContext, option.clicked[0], mx, my - 10, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512)
     }
@@ -653,9 +675,9 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
             // Hover highlight
             if (Utils.isMouseover(mx, my, optionBoxX + 1, optionBoxY + 1, optionBoxWidth - 2, optionBoxHeight)) {
                 ZRenderLib.drawRectRGBA(drawContext, optionBoxX + 1, optionBoxY + 1, optionBoxWidth - 2, optionBoxHeight, ...Variables.globalColors.light, 1)
-                if (Utils.isMouseButtonClicked(0)) {
+                if (!isOverLimit && Utils.isMouseButtonClicked(0)) {
                     option.old = JSON.parse(JSON.stringify(option.value))
-                    option.value[arr[1]] = addOptions.length == Object.values(option.value).length ? 0 : Object.values(option.value).sort((a, b) => b - a)[0] + 1
+                    option.value[arr[1]] = activeOptions.length
                     option.changed = true
                 }
             }
@@ -674,6 +696,78 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
     } else if (Utils.isMouseButtonClicked(0, false, true)) {
         option.addMenuOpen = false
     }
+
+    if (!option.extra.editable) return
+
+    const TryAddNewListValue = () => {
+        if (isOverLimit) return
+        const newValue = Variables.inputs[option.varname].text
+        if (newValue == "") return
+        if (option.options.some(opt => opt[0] === newValue)) return
+        Variables.inputs[option.varname].text = ""
+
+        option.old = JSON.parse(JSON.stringify(option.value))
+        option.options.push([newValue, newValue])
+        option.value[newValue] = activeOptions.length
+        option.changed = true
+    }
+
+    if (!Variables.inputs[option.varname]) {
+        Variables.inputs[option.varname] = new Utils.TextInput("Type here...", true, false, false)
+        Variables.inputs[option.varname].onGuiKey((text) => {
+            Variables.inputs[option.varname].text = text
+        })
+
+        Variables.inputs[option.varname].onEnter((text) => {
+            TryAddNewListValue()
+        })
+    }
+
+    const buttonLabel = "Add"
+    const buttonLabelWidth = ZRenderLib.getStringWidth(buttonLabel)
+    const buttonWidth = Math.max(Math.min(buttonLabelWidth + 8, width), 16)
+    const buttonHeight = 16
+    const buttonX = x + 1
+    const buttonY = y + height + 1 + 5
+    const buttonTextX = buttonX + (buttonWidth - buttonLabelWidth) / 2
+    const buttonTextY = buttonY + 4
+    const isButtonHover = !isOverLimit && Utils.isMouseover(mx, my, buttonX, buttonY, buttonWidth, buttonHeight)
+    const buttonColor = isOverLimit
+        ? Variables.globalColors.dark
+        : (isButtonHover ? Variables.globalColors.light : Variables.globalColors.primary)
+    const buttonTextColor = isOverLimit ? Variables.globalColors.secondaryText : Variables.globalColors.text
+    ZRenderLib.drawRoundedRectRGBA(drawContext, buttonX - insetSpacing, buttonY - insetSpacing, buttonWidth + doubleInsetSpacing, buttonHeight + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
+    ZRenderLib.drawRoundedRectRGBA(drawContext, buttonX, buttonY, buttonWidth, buttonHeight, 3, ...buttonColor)
+    ZRenderLib.drawGUIStringRGBA(drawContext, buttonLabel, buttonTextX, buttonTextY, ...buttonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+
+    if (isButtonHover && Utils.isMouseButtonClicked(0)) {
+        TryAddNewListValue()
+    }
+
+    const textBoxX = x + 1 + buttonWidth + 8
+    const textBoxY = buttonY + 1
+    const textBoxWidth = Math.min(width, Math.max(80, Variables.inputs[option.varname].getWidth() + 8))
+    const textBoxHeight = 14
+    const isTextBoxHover = !isOverLimit && Utils.isMouseover(mx, my, textBoxX, textBoxY, textBoxWidth, textBoxHeight)
+
+    if (isOverLimit) {
+        if (Variables.inputs[option.varname].isActive) {
+            Variables.inputs[option.varname].callOnExit()
+        }
+    } else if (Variables.inputs[option.varname].isActive) {
+        if (Utils.isMouseButtonClicked(0, true) && !isTextBoxHover) {
+            Variables.inputs[option.varname].callOnExit()
+        }
+    } else if (isTextBoxHover) {
+        if (Utils.isMouseButtonClicked(0)) {
+            Variables.inputs[option.varname].isActive = true
+        }
+    }
+
+    const textBoxOuterColor = isOverLimit ? Variables.globalColors.dark : Variables.globalColors.primary
+    ZRenderLib.drawRoundedRectRGBA(drawContext, textBoxX - insetSpacing, textBoxY - insetSpacing, textBoxWidth + doubleInsetSpacing, textBoxHeight + doubleInsetSpacing, 4, ...textBoxOuterColor)
+    ZRenderLib.drawRoundedRectRGBA(drawContext, textBoxX, textBoxY, textBoxWidth, textBoxHeight, 3, ...Variables.globalColors.dark)
+    Variables.inputs[option.varname].draw(drawContext, textBoxX + 2, textBoxY + 1, width, 12)
 }
 export const drawUnorderedList = (drawContext, mx, my, x, y, width, option, mouseOver) => {
     const TryAddNewListValue = () => {

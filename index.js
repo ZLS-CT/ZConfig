@@ -819,7 +819,15 @@ export class ZConfigSettings {
                         lineOffset += 5
                         k += 0.35
                     } else if (option.type == "list") {
-                        option.options.slice().forEach(() => lines.push(""))
+                        let listSize = 0
+                        if (option.extra.editable) {
+                            listSize = 1
+                            lineOffset += 6
+                            k += 0.55
+                        }
+                        for (let i = 0; i < option.options.length + listSize; i++) {
+                            lines.push("")
+                        }
                     } else if (option.type == "unorderedList") {
                         let combinedList = new Set([...option.options, ...option.value])
                         let listSize = -1
@@ -916,6 +924,13 @@ export class ZConfigSettings {
                                     option.value.scaleX = option.placeholder.scaleX
                                     option.value.scaleY = option.placeholder.scaleY
                                 } else if (option.type == "list") {
+                                    for (let key in option.value) {
+                                        if (!(key in option.placeholder)) {
+                                            delete option.value[key]
+                                            const optIndex = option.options.findIndex(opt => opt[1] === key)
+                                            if (optIndex !== -1) option.options.splice(optIndex, 1)
+                                        }
+                                    }
                                     for (let key in option.placeholder) {
                                         option.value[key] = option.placeholder[key]
                                     }
@@ -972,7 +987,11 @@ export class ZConfigSettings {
                             break
                         case "list":
                             if (inViewport) {
-                                Elements.drawList(drawContext, mx, my, rX + 6, rrY - 7 - option.options.length * 12, option, mouseOver)
+                                let listSizeOffset = 0
+                                if (option.extra.editable) {
+                                    listSizeOffset = 2
+                                }
+                                Elements.drawList(drawContext, mx, my, rX + 6, rrY - 7 - (option.options.length + listSizeOffset) * 12, option, mouseOver)
                             }
                             break
                         case "unorderedList":
@@ -1408,10 +1427,28 @@ export class ZConfigSettings {
         if (!data.value) {
             data.value = JSON.parse(JSON.stringify(data.placeholder))
         }
+        if (!data.extra) {
+            data.extra = {
+                editable: data.editable ?? false,
+                lineIndices: data.lineIndices ?? false,
+                maxLength: data.maxLength ?? null,
+            }
+        }
         data.options.forEach((arr, i) => {
             data.placeholder[arr[1]] = i
             data.value[arr[1]] = i
         })
+
+        const persisted = this.data.persistent[data.varname]
+        if (persisted && persisted.type == "list" && persisted.value) {
+            const staticKeys = new Set(data.options.map(arr => arr[1]))
+            for (let key in persisted.value) {
+                if (!staticKeys.has(key)) {
+                    data.options.push([key, key])
+                }
+            }
+        }
+
         this._addOption(data)
         return this
     }
