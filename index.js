@@ -89,7 +89,10 @@ export class ZConfigSettings {
     callOnChanged(option, oldValue = null) {
         if (this.listeners[option.varname || GetElementName(option)]) {
             const newOldValue = option.old || oldValue
-            if (newOldValue == option.value) return
+            const isSame = typeof newOldValue === "object" && newOldValue !== null
+                ? JSON.stringify(newOldValue) === JSON.stringify(option.value)
+                : newOldValue == option.value
+            if (isSame) return
             this.listeners[option.varname || GetElementName(option)].forEach(callback => {
                 callback(option, option.old || oldValue, option.value)
             })
@@ -801,7 +804,6 @@ export class ZConfigSettings {
                     }
                     return a.orderIndex - b.orderIndex
                 }).forEach((option) => {
-                    option.changed = false
                     if (this.selectedSettings) return
                     if (this.IsElementHidden(option)) return
 
@@ -1080,6 +1082,7 @@ export class ZConfigSettings {
                     if (option.changed) {
                         this.callOnChanged(option)
                     }
+                    option.changed = false
                     i += 1.5
                 })
             })
