@@ -4,7 +4,6 @@
     "author": "snailify & Zephy (Nvidia2080Ti)",
     "requires": [
         "ZCore",
-        "ZKeys",
         "ZRenderLib"
     ],
     "version": "1.2.0",

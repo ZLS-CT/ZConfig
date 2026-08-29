@@ -1,5 +1,4 @@
 import * as ZRenderLib from "../ZRenderLib/index"
-import * as ZKeys from "ZKeys"
 import { ChatMessage, StartDelayedCallback, DeleteDelayedCallback, isLegacy, isZJS, isFork } from "ZCore"
 import * as Variables from "./variables"
 
@@ -905,7 +904,7 @@ export class KeybindInput {
         ]
     }
     updateText() {
-        this.text = ZKeys.GetKeyComboName(this.keyName, this.modifiers)
+        this.text = ZKeys.getKeyComboName(this.keyName, JSON.stringify(this.modifiers))
     }
     checkModifiers() {
         let ctrlDown = this.modifiers.ctrl == ZKeys.isCtrlDown()
