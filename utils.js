@@ -728,7 +728,7 @@ export class TextInput {
             this.cursorActive = !this.cursorActive
         }
         const width = ZRenderLib.getStringWidth(this.text.slice(0, this.text.length - this.pointerIndex))
-        ZRenderLib.drawRectRGBA(drawContext, x + width + 1, y + 1, 1, 10, ...(this.cursorActive ? this.cursorColors[0] : this.cursorColors[1]), 2)
+        ZRenderLib.drawRectRGBA(drawContext, x + width + 1, y + 1, 1, 10, ...(this.cursorActive ? this.cursorColors[0] : this.cursorColors[1]))
     }
     getWidth() {
         const text = this.text || this.placeholderText || ""
