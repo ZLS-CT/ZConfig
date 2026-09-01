@@ -1388,6 +1388,7 @@ export class ZConfigSettings {
         if (!data.extra) {
             data.extra = {
                 showActivateInMenusToggle: data.showActivateInMenusToggle || false,
+                activateInMenus: data.activateInMenus || false,
             }
         }
         if (!data.extraPersistent) {

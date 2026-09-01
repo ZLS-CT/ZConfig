@@ -493,12 +493,13 @@ export const drawDropdown = (drawContext, mx, my, x, y, option, mouseOver) => {
 
 export const setupKeybind = (option, settingsObject) => {
     if (!Variables.inputs[option.varname]) {
+        let activateInMenus = option.extra.activateInMenus || option.extraPersistent.activateInMenus
         Variables.inputs[option.varname] = new Utils.KeybindInput(
             option.placeholder,
             option.value,
             option.extraPersistent.isMouseKey,
             option.extraPersistent.modifiers,
-            option.extraPersistent.activateInMenus,
+            activateInMenus,
             option.onPress,
         )
 
@@ -510,9 +511,9 @@ export const setupKeybind = (option, settingsObject) => {
 
             settingsObject.data.persistent[option.varname].value = keyName
             settingsObject.data.persistent[option.varname].extraPersistent = {
-                isMouseKey: isMouseKey,
-                modifiers: modifiers,
-                activateInMenus: option.extraPersistent.activateInMenus,
+                isMouseKey,
+                modifiers,
+                activateInMenus,
             }
             settingsObject.callOnChanged(option)
         })
@@ -522,6 +523,7 @@ export const setupKeybind = (option, settingsObject) => {
 export const drawKeybind = (drawContext, mx, my, x, y, width, option, settingsObject, mouseOver) => {
     const textWidth = Math.min(width, Variables.inputs[option.varname].getWidth() + 8)
 
+    let activateInMenus = option.extra.activateInMenus || option.extraPersistent.activateInMenus
     let isToggleHovered = false
     if (option.extra.showActivateInMenusToggle) {
         const toggleWidth = 32
@@ -560,6 +562,9 @@ export const drawKeybind = (drawContext, mx, my, x, y, width, option, settingsOb
     ZRenderLib.drawRoundedRectRGBA(drawContext, x - insetSpacing, y - insetSpacing, textWidth + doubleInsetSpacing, 16 + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
     ZRenderLib.drawRoundedRectRGBA(drawContext, x, y, textWidth, 16, 3, ...Variables.globalColors.primary)
     Variables.inputs[option.varname].draw(drawContext, x + 2, y + 2)
+    if (activateInMenus) {
+        Variables.inputs[option.varname].activateInMenus = activateInMenus
+    }
 }
 
 export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
