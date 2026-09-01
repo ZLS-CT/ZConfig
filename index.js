@@ -1,5 +1,5 @@
 import * as ZRenderLib from "../ZRenderLib/index"
-import { modulesFolder, gameVersion } from "ZCore"
+import { modulesFolder, gameVersion, removeEmptyMapValues } from "ZCore"
 
 import * as Variables from "./variables"
 import * as Utils from "./utils"
@@ -255,6 +255,7 @@ export class ZConfigSettings {
                             return
                         }
                     })
+                    persistentDataCopy[varname] = removeEmptyMapValues(persistentDataCopy[varname])
                 })
                 FileLib.write(moduleFolder, settingsFilePath, JSON.stringify(persistentDataCopy, null, 4))
             },
