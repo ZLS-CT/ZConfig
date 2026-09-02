@@ -1,12 +1,12 @@
 import * as ZRenderLib from "../ZRenderLib/index"
-import { modulesFolder, gameVersion, removeEmptyMapValues } from "ZCore"
+import { modulesFolderPath, gameVersion, removeEmptyMapValues } from "ZCore"
 
 import * as Variables from "./variables"
 import * as Utils from "./utils"
 import * as Elements from "./elements"
 import * as Hud from "./hud"
 
-const searchIcon = ZRenderLib.loadImageFromFile(`${modulesFolder}/${Variables.moduleName}/assets/UISearchIcon.png`)
+const searchIcon = ZRenderLib.loadImageFromFile(`${modulesFolderPath}/${Variables.moduleName}/assets/UISearchIcon.png`)
 const insetSpacing = 1
 const doubleInsetSpacing = insetSpacing * 2
 

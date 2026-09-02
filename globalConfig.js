@@ -1,7 +1,7 @@
 import { ZConfigSettings } from "./index.js"
 import {
     isLegacy,
-    modulesFolder,
+    modulesFolderPath,
     registerNewCommand,
     createCommandHandler,
     createCommandLiteral,
@@ -73,7 +73,7 @@ const SaveColorPreset = (presetName, presetData, overwrite, sendChatMessage) => 
     if (!presetName) throw "Invalid preset name."
     if (!presetData) throw "Invalid preset data."
 
-    const outputFolder = new File(`${modulesFolder}/${Variables.moduleName}/ColorPresets/`)
+    const outputFolder = new File(`${modulesFolderPath}/${Variables.moduleName}/ColorPresets/`)
     if (!outputFolder.exists()) {
         outputFolder.mkdirs()
     }
@@ -94,7 +94,7 @@ const DeletePreset = (presetName) => {
         return
     }
 
-    const outputFolder = new File(`${modulesFolder}/${Variables.moduleName}/ColorPresets/`)
+    const outputFolder = new File(`${modulesFolderPath}/${Variables.moduleName}/ColorPresets/`)
     if (!outputFolder.exists()) {
         ChatMessage(`&7[&aZConfig&7] &6-> &cPreset folder not found!`)
         return

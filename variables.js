@@ -1,5 +1,5 @@
 import * as ZRenderLib from "../ZRenderLib/index"
-import { modulesFolder } from "ZCore"
+import { modulesFolderPath } from "ZCore"
 
 export class ExportableValue {
     constructor(initial) {
@@ -25,7 +25,7 @@ export class ExportableValue {
 
 export const moduleName = "ZConfig"
 export const globalConfigName = "ZConfig Global Settings"
-export const backIcon = ZRenderLib.loadImageFromFile(`${modulesFolder}/${moduleName}/assets/UIBackIcon.png`)
+export const backIcon = ZRenderLib.loadImageFromFile(`${modulesFolderPath}/${moduleName}/assets/UIBackIcon.png`)
 export const colorPresets = {
     "Default": {
         primary: [90, 102, 255, 255],
@@ -67,7 +67,7 @@ export const colorPresets = {
 
 export const GetCustomPresets = () => {
     const customPresetMap = {}
-    const presetFolder = new JavaFile(`${modulesFolder}/${moduleName}/ColorPresets/`)
+    const presetFolder = new JavaFile(`${modulesFolderPath}/${moduleName}/ColorPresets/`)
     if (!presetFolder.exists()) {
         return customPresetMap
     }
@@ -76,7 +76,7 @@ export const GetCustomPresets = () => {
     files.forEach(file => {
         if (!(file.isFile() && file.getName().endsWith(".json"))) return
         try {
-            customPresetMap[file.getName().replace(".json", "")] = JSON.parse(FileLib.read(`${modulesFolder}/${moduleName}/ColorPresets/${file.getName()}`))
+            customPresetMap[file.getName().replace(".json", "")] = JSON.parse(FileLib.read(`${modulesFolderPath}/${moduleName}/ColorPresets/${file.getName()}`))
         } catch (e) { }
     })
     return customPresetMap
