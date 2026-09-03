@@ -619,7 +619,6 @@ export class ZConfigSettings {
                     if (!categoryData.subcategories) return false
                     return Object.values(categoryData.subcategories).some(subcategory =>
                         Object.values(subcategory.elements).some(element => {
-                            allHidden = false
                             return !this.IsElementHidden(element)
                         })
                     )
