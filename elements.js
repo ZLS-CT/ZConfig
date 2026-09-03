@@ -890,12 +890,17 @@ export const drawHud = (drawContext, mx, my, x, y, width, option, mouseOver, las
     }
 }
 
-export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
+export const drawCheckbox = (drawContext, mx, my, x, y, option, config, mouseOver) => {
+    const visibleOptions = option.options.filter(([_, __, ___, extra]) => {
+        if (!extra || !extra.requires) return true
+        return config.checkDependencies(extra.requires)
+    })
+
     const progress = Utils.lerp(option.progress, option.down ? 1 : 0, option.time, 100)
-    const w = Math.max(80, Utils.getLongest(option.options.map(([prettyName, _]) => prettyName)).width + 24)
+    const w = Math.max(80, Utils.getLongest(visibleOptions.map(([prettyName, _]) => prettyName)).width + 24)
 
     // Draw option outline
-    ZRenderLib.drawRoundedRectRGBA(drawContext, x - insetSpacing, y - insetSpacing, w + doubleInsetSpacing, 16 * (option.down ? option.options.length + 1 : 1) * (progress || 1) + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
+    ZRenderLib.drawRoundedRectRGBA(drawContext, x - insetSpacing, y - insetSpacing, w + doubleInsetSpacing, 16 * (option.down ? visibleOptions.length + 1 : 1) * (progress || 1) + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
 
     // Draw option outline
     const selectedLabel = option.value.length == 0 ? "None"
@@ -909,7 +914,7 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
     option.hovered = false
     if (option.down || progress) {
         let ii = 1
-        option.options.forEach(([prettyName, varName], i) => {
+        visibleOptions.forEach(([prettyName, varName], i) => {
             let mOver = Utils.isMouseover(mx, my, x, y + ii * 16 * progress, w, 16)
             if (mOver && Utils.isMouseButtonClicked(0)) {
                 if (option.value.includes(varName)) {
@@ -933,7 +938,7 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, mouseOver) => {
                 hoverColor = Variables.globalColors.dark
             }
 
-            let itemFlatCorners = (i == option.options.length - 1) ? ZRenderLib.TOP_FLAT_CORNERS : ZRenderLib.ALL_FLAT_CORNERS
+            let itemFlatCorners = (i == visibleOptions.length - 1) ? ZRenderLib.TOP_FLAT_CORNERS : ZRenderLib.ALL_FLAT_CORNERS
             ZRenderLib.drawRoundedRectRGBA(drawContext, x, y + ii * 16 * progress, w, 16, 4, ...hoverColor, itemFlatCorners)
 
             // Draw divider line

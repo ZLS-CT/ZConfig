@@ -62,26 +62,27 @@ export class ZConfigSettings {
         return this.gui.isOpen() || Variables.globalConfig.gui.isOpen()
     }
 
+    checkDependencies = (requires) => {
+        if (!requires || requires.length === 0) return true
+        return requires.every(requiresData => {
+            const dependsOnVarName = Object.keys(requiresData)[0]
+            const dependsOnValue = requiresData[dependsOnVarName]
+            const dependsOnOption = this.data.persistent[dependsOnVarName]
+
+            if (!dependsOnOption) return false
+            if (typeof dependsOnValue == "function") {
+                return dependsOnValue(dependsOnOption.value)
+            }
+            return dependsOnOption.value == dependsOnValue
+        })
+    }
+
     IsElementHidden = (element) => {
         if (element.hidden) return true
         if (element.hideIf) {
             if (element.hideIf(this.data.persistent[element.varname].value)) return true
         }
-
-        if (element.requires && element.requires.length > 0) {
-            const allDependenciesMet = element.requires.every(requiresData => {
-                const dependsOnVarName = Object.keys(requiresData)[0]
-                const dependsOnValue = requiresData[dependsOnVarName]
-                const dependsOnOption = this.data.persistent[dependsOnVarName]
-
-                if (!dependsOnOption) return false
-                if (typeof dependsOnValue == "function") {
-                    return dependsOnValue(dependsOnOption.value)
-                }
-                return dependsOnOption.value == dependsOnValue
-            })
-            if (!allDependenciesMet) return true
-        }
+        if (!this.checkDependencies(element.requires)) return true
         return false
     }
 
@@ -843,8 +844,11 @@ export class ZConfigSettings {
                         }
                     } else if (option.type == "dropdown" || option.type == "checkbox") {
                         if (option.down) {
-                            lineOffset += 16 * option.options.length
-                            k += (1.325 * option.options.length)// + 1.35
+                            const visibleCount = option.type == "checkbox"
+                                ? option.options.filter(opt => this.checkDependencies(opt[3]?.requires)).length
+                                : option.options.length
+                            lineOffset += 16 * visibleCount
+                            k += (1.325 * visibleCount)
                         }
                     } else if (option.type == "button" || option.type == "hud") {
                         lineOffset += 4
@@ -1045,7 +1049,7 @@ export class ZConfigSettings {
                         case "checkbox":
                             rrY -= k * 12
                             if (inViewport) {
-                                Elements.drawCheckbox(drawContext, mx, my, rX + 6, rrY - 17, option, mouseOver)
+                                Elements.drawCheckbox(drawContext, mx, my, rX + 6, rrY - 17, option, this, mouseOver)
                                 if (option.hovered) {
                                     mouseOver = false
                                 }
