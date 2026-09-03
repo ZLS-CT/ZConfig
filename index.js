@@ -639,7 +639,13 @@ export class ZConfigSettings {
                     }
                     return 0
                 }).forEach(([categoryName, categoryData]) => {
-                    if (categoryName == "default" || allHidden) return
+                    if (categoryName == "default") return
+                    if (!categoryData.subcategories) return
+
+                    const categoryHasVisibleElements = Object.values(categoryData.subcategories).some(subcategory =>
+                        Object.values(subcategory.elements).some(element => !this.IsElementHidden(element))
+                    )
+                    if (!categoryHasVisibleElements) return
 
                     let rrX = rX + categoryPadding
                     let rrY = titleHeight + categoryPadding + i * 16 + scroll[1].scroll
@@ -717,6 +723,17 @@ export class ZConfigSettings {
                     y2 > scissorY &&
                     y1 < (scissorY + scissorHeight)
                 )
+            }
+
+            if (this.selectedCategory) {
+                const stillVisible = this.selectedCategory[1]["subcategories"] &&
+                    Object.values(this.selectedCategory[1]["subcategories"]).some(subcategory =>
+                        Object.values(subcategory.elements).some(element => !this.IsElementHidden(element))
+                    )
+                if (!stillVisible) {
+                    this.selectedCategory = this.GetFirstVisibleCategory()
+                    if (!this.selectedCategory) return
+                }
             }
 
             // Draw category title
