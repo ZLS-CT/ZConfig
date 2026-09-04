@@ -86,6 +86,46 @@ export class ZConfigSettings {
         return false
     }
 
+    ResetOption = (optionOrVarname) => {
+        if (typeof optionOrVarname === "string") {
+            optionOrVarname = this.data.allOptions[optionOrVarname]
+        }
+        const option = optionOrVarname
+        option.old = JSON.parse(JSON.stringify(option.value))
+        if (option.type == "hud") {
+            option.value.x = option.placeholder.baseX
+            option.value.y = option.placeholder.baseY
+            option.value.width = option.placeholder.baseWidth
+            option.value.height = option.placeholder.baseHeight
+            option.value.scaleX = option.placeholder.scaleX
+            option.value.scaleY = option.placeholder.scaleY
+        } else if (option.type == "list") {
+            for (let key in option.value) {
+                if (!(key in option.placeholder)) {
+                    delete option.value[key]
+                    const optIndex = option.options.findIndex(opt => opt[1] === key)
+                    if (optIndex != -1) option.options.splice(optIndex, 1)
+                }
+            }
+            for (let key in option.placeholder) {
+                option.value[key] = option.placeholder[key]
+            }
+        } else {
+            option.value = JSON.parse(JSON.stringify(option.placeholder))
+            if (option.type == "color") {
+                Utils.ResetColorPickerFromRGB(option, option.placeholder)
+            } else if (option.type == "slider") {
+                Utils.UpdateInputFieldText(option, option.value)
+            } else if (option.type == "text") {
+                Utils.UpdateInputFieldText(option, option.value)
+            } else if (option.type == "keybind") {
+                Variables.inputs[option.varname].reset(option.placeholder)
+                option.extraPersistent = JSON.parse(JSON.stringify(option.extra.persistentPlaceholder))
+            }
+        }
+        option.changed = true
+    }
+
     callOnChanged(option, oldValue = null) {
         if (this.listeners[option.varname || GetElementName(option)]) {
             const newOldValue = option.old || oldValue
@@ -937,39 +977,7 @@ export class ZConfigSettings {
                             }
 
                             if (Utils.isMouseButtonClicked(0)) {
-                                option.old = JSON.parse(JSON.stringify(option.value))
-                                if (option.type == "hud") {
-                                    option.value.x = option.placeholder.baseX
-                                    option.value.y = option.placeholder.baseY
-                                    option.value.width = option.placeholder.baseWidth
-                                    option.value.height = option.placeholder.baseHeight
-                                    option.value.scaleX = option.placeholder.scaleX
-                                    option.value.scaleY = option.placeholder.scaleY
-                                } else if (option.type == "list") {
-                                    for (let key in option.value) {
-                                        if (!(key in option.placeholder)) {
-                                            delete option.value[key]
-                                            const optIndex = option.options.findIndex(opt => opt[1] === key)
-                                            if (optIndex !== -1) option.options.splice(optIndex, 1)
-                                        }
-                                    }
-                                    for (let key in option.placeholder) {
-                                        option.value[key] = option.placeholder[key]
-                                    }
-                                } else {
-                                    option.value = JSON.parse(JSON.stringify(option.placeholder))
-                                    if (option.type == "color") {
-                                        Utils.ResetColorPickerFromRGB(option, option.placeholder)
-                                    } else if (option.type == "slider") {
-                                        Utils.UpdateInputFieldText(option, option.value)
-                                    } else if (option.type == "text") {
-                                        Utils.UpdateInputFieldText(option, option.value)
-                                    } else if (option.type == "keybind") {
-                                        Variables.inputs[option.varname].reset(option.placeholder)
-                                        option.extraPersistent = JSON.parse(JSON.stringify(option.extra.persistentPlaceholder))
-                                    }
-                                }
-                                option.changed = true
+                                this.ResetOption(option)
                             }
                         } else {
                             resetColor = colors.dark
