@@ -37,13 +37,13 @@ let scroll = [
 ]
 
 const GetElementName = (element) => {
-    if (typeof element.name === "function") {
+    if (typeof element.name == "function") {
         return element.name(element)
     }
     return element.name
 }
 const GetElementDescription = (element) => {
-    if (typeof element.description === "function") {
+    if (typeof element.description == "function") {
         return element.description(element)
     }
     return element.description
@@ -63,7 +63,7 @@ export class ZConfigSettings {
     }
 
     checkDependencies = (requires) => {
-        if (!requires || requires.length === 0) return true
+        if (!requires || requires.length == 0) return true
         return requires.every(requiresData => {
             const dependsOnVarName = Object.keys(requiresData)[0]
             const dependsOnValue = requiresData[dependsOnVarName]
@@ -87,7 +87,7 @@ export class ZConfigSettings {
     }
 
     ResetOption = (optionOrVarname) => {
-        if (typeof optionOrVarname === "string") {
+        if (typeof optionOrVarname == "string") {
             optionOrVarname = this.data.allOptions[optionOrVarname]
         }
         const option = optionOrVarname
@@ -103,7 +103,7 @@ export class ZConfigSettings {
             for (let key in option.value) {
                 if (!(key in option.placeholder)) {
                     delete option.value[key]
-                    const optIndex = option.options.findIndex(opt => opt[1] === key)
+                    const optIndex = option.options.findIndex(opt => opt[1] == key)
                     if (optIndex != -1) option.options.splice(optIndex, 1)
                 }
             }
@@ -112,12 +112,14 @@ export class ZConfigSettings {
             }
         } else {
             option.value = JSON.parse(JSON.stringify(option.placeholder))
+            // This is awful, but imports apparently aren't loaded here
+            const utils = require(`../ZConfig/utils`)
             if (option.type == "color") {
-                Utils.ResetColorPickerFromRGB(option, option.placeholder)
+                utils.ResetColorPickerFromRGB(option, option.placeholder)
             } else if (option.type == "slider") {
-                Utils.UpdateInputFieldText(option, option.value)
+                utils.UpdateInputFieldText(option, option.value)
             } else if (option.type == "text") {
-                Utils.UpdateInputFieldText(option, option.value)
+                utils.UpdateInputFieldText(option, option.value)
             } else if (option.type == "keybind") {
                 Variables.inputs[option.varname].reset(option.placeholder)
                 option.extraPersistent = JSON.parse(JSON.stringify(option.extra.persistentPlaceholder))
@@ -129,8 +131,8 @@ export class ZConfigSettings {
     callOnChanged(option, oldValue = null) {
         if (this.listeners[option.varname || GetElementName(option)]) {
             const newOldValue = option.old || oldValue
-            const isSame = typeof newOldValue === "object" && newOldValue !== null
-                ? JSON.stringify(newOldValue) === JSON.stringify(option.value)
+            const isSame = typeof newOldValue == "object" && newOldValue !== null
+                ? JSON.stringify(newOldValue) == JSON.stringify(option.value)
                 : newOldValue == option.value
             if (isSame) return
             this.listeners[option.varname || GetElementName(option)].forEach(callback => {
@@ -145,10 +147,10 @@ export class ZConfigSettings {
         if (!dependsOnVarname) {
             throw new Error("No dependsOn varname provided to addDependency")
         }
-        if (dependsOnValue === undefined) {
+        if (dependsOnValue == undefined) {
             throw new Error("No dependsOnValue provided to addDependency")
         }
-        if (typeof optionOrVarname === "string") {
+        if (typeof optionOrVarname == "string") {
             optionOrVarname = this.data.allOptions[optionOrVarname]
         }
         const option = optionOrVarname
@@ -160,7 +162,7 @@ export class ZConfigSettings {
             throw new Error(`dependsOn \`${dependsOnVarname}\` does not exist in module \`${this.moduleName}\``)
         }
 
-        option.requires = option.requires || []
+        option.requires = option.requires ?? []
         option.requires.push({ [dependsOnVarname]: dependsOnValue })
         return this
     }
@@ -168,7 +170,7 @@ export class ZConfigSettings {
         if (!categoryName) {
             throw new Error("No category name provided to setCategoryDescription")
         }
-        description = description || ""
+        description = description ?? ""
         let found = false
         for (let group of Object.values(this.data.groups)) {
             for (let category of Object.keys(group)) {
@@ -187,7 +189,7 @@ export class ZConfigSettings {
         if (!subcategoryName) {
             throw new Error("No subcategory name provided to setSubcategoryDescription")
         }
-        description = description || ""
+        description = description ?? ""
         let found = false
         for (let group of Object.values(this.data.groups)) {
             for (let category of Object.values(group)) {
@@ -267,7 +269,7 @@ export class ZConfigSettings {
                         return !this.IsElementHidden(element)
                     })
                 )
-            }) || null
+            }) ?? null
         })
         return selectedCategory
     }
@@ -347,7 +349,7 @@ export class ZConfigSettings {
         let searchIndex = 0
 
         searchBar.onGuiKey((query) => {
-            if (query === lastSearchQuery) return
+            if (query == lastSearchQuery) return
             lastSearchQuery = query
 
             if (!query || query.trim() === '') {
@@ -806,7 +808,7 @@ export class ZConfigSettings {
                 const progress = Utils.lerp(0, 1, this.optionSettingsOpenTime, 300)
                 ZRenderLib.drawRectRGBA(drawContext, 0, 0, width, height, 0, 0, 0, 200 * progress)
                 let settingsColor = colors.darker.slice()
-                settingsColor[3] = (settingsColor[3] || 255) * Math.min(1, progress * 2)
+                settingsColor[3] = (settingsColor[3] ?? 255) * Math.min(1, progress * 2)
                 ZRenderLib.drawRoundedRectRGBA(drawContext, width / 2 - settingsWidth / 2 + settingsWidth * (1 - progress) / 2, titleHeight * 2, settingsWidth * progress, (height - titleHeight * 4) * progress, 6, ...settingsColor)
             }
 
@@ -1416,8 +1418,8 @@ export class ZConfigSettings {
         }
         if (!data.extra) {
             data.extra = {
-                showActivateInMenusToggle: data.showActivateInMenusToggle || false,
-                activateInMenus: data.activateInMenus || false,
+                showActivateInMenusToggle: data.showActivateInMenusToggle ?? false,
+                activateInMenus: data.activateInMenus ?? false,
             }
         }
         if (!data.extraPersistent) {
@@ -1490,7 +1492,7 @@ export class ZConfigSettings {
             throw new Error("List cannot be initialized without options")
         }
         if (!data.placeholder) {
-            data.placeholder = JSON.parse(JSON.stringify(data.options)) || []
+            data.placeholder = JSON.parse(JSON.stringify(data.options)) ?? []
         }
         if (!data.value) {
             data.value = JSON.parse(JSON.stringify(data.placeholder))
@@ -1696,7 +1698,7 @@ export class ZConfigSettings {
             setupCallback(this.data.groups[group][category]["subcategories"][subcategory]["elements"][varname])
         }
 
-        Object.defineProperty(this, varname || name, {
+        Object.defineProperty(this, varname ?? name, {
             get: function() {
                 return this.data.persistent[varname].value
             },

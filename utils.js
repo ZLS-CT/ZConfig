@@ -41,7 +41,7 @@ export const isMouseButtonClicked = (num, stopClick, reset) => {
 export const RemoveFormatting = (text) => {
     if (text == null) return ""
     const str = String(text)
-    if (str.trim() === "") return str
+    if (str.trim() == "") return str
     return ChatLib.removeFormatting(str)
 }
 
@@ -72,7 +72,7 @@ register("clicked", (mx, my, mbtn, state) => {
     mouseButtonClicked[mbtn] = state
 })
 export const isMouseButtonDown = (num) => {
-    if (mouseButtonClicked[num] === undefined) {
+    if (mouseButtonClicked[num] = undefined) {
         mouseButtonClicked[num] = false
     }
     return mouseButtonClicked[num]
@@ -226,7 +226,7 @@ function parseMarkdown(content, width) {
 
         const trimmedLine = line.trim()
         if (trimmedLine.startsWith("```")) {
-            if (trimmedLine === "```") {
+            if (trimmedLine == "```") {
                 currentY -= 12
             } else {
                 const codeText = line.replace("```", "")
@@ -285,7 +285,7 @@ function parseMarkdown(content, width) {
         const firstChar = processLine.trim()[0]
 
         // Dividers
-        if ((firstChar === '-' || firstChar === '*') && /^[-*]{3,}$/.test(processLine.trim())) {
+        if ((firstChar == '-' || firstChar == '*') && /^[-*]{3,}$/.test(processLine.trim())) {
             currentY -= 8
             elements.push({
                 type: 'divider',
@@ -297,7 +297,7 @@ function parseMarkdown(content, width) {
         }
 
         // Headings
-        if (firstChar === '#') {
+        if (firstChar == '#') {
             const heading = processLine.match(/^(#{1,3}) (.+)/)
             if (heading) {
                 const level = heading[1].length
@@ -316,7 +316,7 @@ function parseMarkdown(content, width) {
         }
 
         // Blockquotes
-        if (firstChar === '>') {
+        if (firstChar == '>') {
             const blockquote = processLine.match(/^(>+)\s(.+)/)
             if (blockquote) {
                 const depth = blockquote[1].length
@@ -337,7 +337,7 @@ function parseMarkdown(content, width) {
         }
 
         // Lists
-        if (processLine[0] === ' ' || firstChar === '*') {
+        if (processLine[0] == ' ' || firstChar == '*') {
             const list = processLine.match(/^(\s*)\* (.+)/)
             if (list) {
                 const listText = list[2]
@@ -439,13 +439,13 @@ export const ResetColorPickerFromRGB = (option, rgb) => {
 
     let hue = 0
     if (delta !== 0) {
-        if (max === R) hue = ((G - B) / delta) % 6
-        else if (max === G) hue = (B - R) / delta + 2
+        if (max == R) hue = ((G - B) / delta) % 6
+        else if (max == G) hue = (B - R) / delta + 2
         else hue = (R - G) / delta + 4
     }
     hue = (hue + 6) % 6
     const hueSelection = hue / 6
-    const saturation = max === 0 ? 0 : delta / max
+    const saturation = max == 0 ? 0 : delta / max
     const value = max
     const xDiff = 1 - saturation
     const yDiff = value
@@ -564,7 +564,7 @@ export const splitIntoLines = (string, desiredLength) => {
     const paragraphs = string.toString().split(/\r?\n/)
     const lines = []
     for (let paragraph of paragraphs) {
-        if (paragraph.trim() === '') {
+        if (paragraph.trim() == '') {
             lines.push(" ")
             continue
         }
@@ -598,7 +598,7 @@ export const drawTooltip = (drawContext, line, x, y, colorArr, opacity) => {
 export const lerp = (current, target, startTime, duration) => {
     const elapsedTime = Date.now() - startTime
     const progress = Math.min(elapsedTime / duration, 1)
-    if (progress === 0 || progress === 1) {
+    if (progress == 0 || progress == 1) {
         return current + progress * (target - current)
     }
     const middlePhase = progress * (2 - progress)

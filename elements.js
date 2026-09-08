@@ -97,7 +97,7 @@ export const drawMcColor = (drawContext, mx, my, x, y, option, mouseOver) => {
 
         // Draw backgrounds
         ZRenderLib.drawRoundedRectRGBA(drawContext, cellX, cellY, totalSize, totalSize, 4, ...tertiaryColor)
-        ZRenderLib.drawRoundedRectRGBA(drawContext, xPos, yPos, insetSize, insetSize, 3, ...(option.value[valueIdx] === col ? primaryColor : secondaryColor))
+        ZRenderLib.drawRoundedRectRGBA(drawContext, xPos, yPos, insetSize, insetSize, 3, ...(option.value[valueIdx] == col ? primaryColor : secondaryColor))
 
         // Handle interaction
         const isHover = Utils.isMouseover(mx, my, xPos, yPos, totalSize, totalSize)
@@ -108,7 +108,7 @@ export const drawMcColor = (drawContext, mx, my, x, y, option, mouseOver) => {
         ZRenderLib.drawGUIStringRGBA(drawContext, text, textX, textY, ...Variables.globalColors.text, 1, false, textShadow, 512, 1)
 
         if (isHover && Utils.isMouseButtonClicked(0)) {
-            option.value[valueIdx] = option.value[valueIdx] === col ? "" : col
+            option.value[valueIdx] = option.value[valueIdx] == col ? "" : col
             option.changed = true
         }
     }
@@ -119,7 +119,7 @@ export const drawMcColor = (drawContext, mx, my, x, y, option, mouseOver) => {
     // Second row: formatting codes k-o
     const formatCodes = ["k", "l", "m", "n", "o"]
     formatCodes.forEach((col, i) =>
-        drawColorCell(col, i, y + 17, 1, col === "l" ? 1.5 : 0)
+        drawColorCell(col, i, y + 17, 1, col == "l" ? 1.5 : 0)
     )
 }
 export const drawColor = (drawContext, mx, my, x, y, option, settingsObject, mouseOver) => {
@@ -589,7 +589,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
 
     const addButtonX = x + width - 10
     const addButtonY = y + 4
-    const addOptions = option.options.filter(opt => option.value[opt[1]] === null)
+    const addOptions = option.options.filter(opt => option.value[opt[1]] == null)
     const activeOptions = option.options
         .filter(opt => option.value[opt[1]] != null)
         .sort((a, b) => option.value[a[1]] - option.value[b[1]])
@@ -626,7 +626,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
                     if (Utils.isMouseover(mx, my, x + width - 12, rY - 1, 10, 10)) {
                         const isCustom = option.placeholder && !(arr[1] in option.placeholder)
                         if (isCustom) {
-                            const optIndex = option.options.findIndex(opt => opt[1] === arr[1])
+                            const optIndex = option.options.findIndex(opt => opt[1] == arr[1])
                             if (optIndex !== -1) option.options.splice(optIndex, 1)
                             delete option.value[arr[1]]
                         } else {
@@ -708,7 +708,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
         if (isOverLimit) return
         const newValue = Variables.inputs[option.varname].text
         if (newValue == "") return
-        if (option.options.some(opt => opt[0] === newValue)) return
+        if (option.options.some(opt => opt[0] == newValue)) return
         Variables.inputs[option.varname].text = ""
 
         option.old = JSON.parse(JSON.stringify(option.value))
@@ -905,7 +905,7 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, config, mouseOve
     // Draw option outline
     const selectedLabel = option.value.length == 0 ? "None"
         : option.value.length > 1 ? "... (" + option.value.length + ")"
-        : option.options.find(([_, varName]) => varName === option.value[0])?.[0] ?? option.value[0]
+        : option.options.find(([_, varName]) => varName == option.value[0])?.[0] ?? option.value[0]
     let mainFlatCorners = (option.down) ? ZRenderLib.BOTTOM_FLAT_CORNERS : []
     ZRenderLib.drawRoundedRectRGBA(drawContext, x, y, w, 16, 4, ...Variables.globalColors.primary, mainFlatCorners)
     ZRenderLib.drawGUIStringRGBA(drawContext, selectedLabel, x + 4, y + 4, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
