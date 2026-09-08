@@ -72,7 +72,7 @@ register("clicked", (mx, my, mbtn, state) => {
     mouseButtonClicked[mbtn] = state
 })
 export const isMouseButtonDown = (num) => {
-    if (mouseButtonClicked[num] = undefined) {
+    if (mouseButtonClicked[num] == undefined) {
         mouseButtonClicked[num] = false
     }
     return mouseButtonClicked[num]
