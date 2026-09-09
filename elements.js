@@ -63,6 +63,9 @@ export const drawText = (drawContext, mx, my, x, y, width, option, settingsObjec
         Variables.inputs[option.varname].onEnter(onExit)
     }
 
+    const resetButtonWidth = 56
+    const inputAreaWidth = width - resetButtonWidth
+
     if (Variables.inputs[option.varname].isActive) {
         if (Utils.isMouseButtonClicked(0, true) && !mouseOver) {
             Variables.inputs[option.varname].callOnExit()
@@ -74,10 +77,10 @@ export const drawText = (drawContext, mx, my, x, y, width, option, settingsObjec
     }
 
     // Draw input box
-    const textWidth = Math.min(width, Variables.inputs[option.varname].getWidth() + 8)
+    const textWidth = Math.min(inputAreaWidth, Variables.inputs[option.varname].getWidth() + 8)
     ZRenderLib.drawRoundedRectRGBA(drawContext, x - insetSpacing, y - insetSpacing, textWidth + doubleInsetSpacing, 14 + doubleInsetSpacing, 4, ...Variables.globalColors.tertiary)
     ZRenderLib.drawRoundedRectRGBA(drawContext, x, y, textWidth, 14, 3, ...Variables.globalColors.primary)
-    Variables.inputs[option.varname].draw(drawContext, x + 2, y + 1, width, 12)
+    Variables.inputs[option.varname].draw(drawContext, x + 2, y + 1, inputAreaWidth, 12)
 }
 export const drawMcColor = (drawContext, mx, my, x, y, option, mouseOver) => {
     const totalSize = 16

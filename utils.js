@@ -635,6 +635,7 @@ export class TextInput {
     rgba = [255, 255, 255, 255]
     cursorTicks = 0
     cursorActive = true
+    scrollOffset = 0
 
     selectedTextColor = [255, 255, 85, 255]
     cursorColors = [
@@ -711,7 +712,7 @@ export class TextInput {
             })
         ]
     }
-    draw(drawContext, x, y, w, h) {
+    draw(drawContext, x, y, w, h, reservedRightWidth = 6) {
         const mx = Client.getMouseX()
         const my = Client.getMouseY()
         const text = (this.password && !this.isActive) ? ("*").repeat((this.text || this.placeholderText).length) : this.text || this.placeholderText || ""
@@ -719,16 +720,47 @@ export class TextInput {
         if (this.rgba.length == 3) {
             newColor[3] = 255
         }
-        ZRenderLib.drawGUIStringRGBA(drawContext, text, x + 2, y + 2, ...newColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
 
-        if (!this.isActive) return
-        this.cursorTicks++
-        if (this.cursorTicks >= this.maxCursorTicks) {
-            this.cursorTicks = 0
-            this.cursorActive = !this.cursorActive
+        const effectiveWidth = Math.max(0, w - reservedRightWidth)
+        const cursorX = ZRenderLib.getStringWidth(text.slice(0, text.length - this.pointerIndex))
+
+        if (this.isActive) {
+            if (cursorX - this.scrollOffset > effectiveWidth - 2) {
+                this.scrollOffset = cursorX - effectiveWidth + 2
+            }
+            if (cursorX - this.scrollOffset < 0) {
+                this.scrollOffset = cursorX
+            }
+        } else {
+            this.scrollOffset = 0
         }
-        const width = ZRenderLib.getStringWidth(this.text.slice(0, this.text.length - this.pointerIndex))
-        ZRenderLib.drawRectRGBA(drawContext, x + width + 1, y + 1, 1, 10, ...(this.cursorActive ? this.cursorColors[0] : this.cursorColors[1]))
+
+        let realWidth = 0
+        if (this.scrollOffset > 0) {
+            for (let startIdx = 0; startIdx < text.length; startIdx++) {
+                const charWidth = ZRenderLib.getStringWidth(text[startIdx])
+                if (realWidth + charWidth > this.scrollOffset) {
+                    break
+                }
+                realWidth += charWidth
+            }
+        }
+        const remainderWidth = this.scrollOffset - realWidth
+        const visibleText = text.slice(startIdx)
+        const drawX = x + 2 - remainderWidth
+
+        drawContext.enableScissor(x, y, x + effectiveWidth, y + h - 1)
+        ZRenderLib.drawGUIStringRGBA(drawContext, visibleText, drawX, y + 2, ...newColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+
+        if (this.isActive) {
+            this.cursorTicks++
+            if (this.cursorTicks >= this.maxCursorTicks) {
+                this.cursorTicks = 0
+                this.cursorActive = !this.cursorActive
+            }
+            ZRenderLib.drawRectRGBA(drawContext, x + cursorX + 1 - this.scrollOffset, y + 1, 1, 10, ...(this.cursorActive ? this.cursorColors[0] : this.cursorColors[1]))
+        }
+        drawContext.disableScissor()
     }
     getWidth() {
         const text = this.text || this.placeholderText || ""
