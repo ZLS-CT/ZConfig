@@ -736,9 +736,10 @@ export class TextInput {
         }
 
         let realWidth = 0
+        let startIndex = 0
         if (this.scrollOffset > 0) {
-            for (let startIdx = 0; startIdx < text.length; startIdx++) {
-                const charWidth = ZRenderLib.getStringWidth(text[startIdx])
+            for (startIndex = 0; startIndex < text.length; startIndex++) {
+                const charWidth = ZRenderLib.getStringWidth(text[startIndex])
                 if (realWidth + charWidth > this.scrollOffset) {
                     break
                 }
@@ -746,7 +747,7 @@ export class TextInput {
             }
         }
         const remainderWidth = this.scrollOffset - realWidth
-        const visibleText = text.slice(startIdx)
+        const visibleText = text.slice(startIndex)
         const drawX = x + 2 - remainderWidth
 
         drawContext.enableScissor(x, y, x + effectiveWidth, y + h - 1)
