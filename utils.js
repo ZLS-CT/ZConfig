@@ -750,8 +750,8 @@ export class TextInput {
         const visibleText = text.slice(startIndex)
         const drawX = x + 2 - remainderWidth
 
-        drawContext.enableScissor(x, y, x + effectiveWidth, y + h - 1)
-        ZRenderLib.drawGUIStringRGBA(drawContext, visibleText, drawX, y + 2, ...newColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
+        drawContext.enableScissor(x, y - 2, x + effectiveWidth, y + h + 4)
+        ZRenderLib.drawGUIStringRGBA(drawContext, visibleText, drawX, y + 2, ...newColor, 1, false, Variables.globalConfig.globalTextShadow, 2048, 1)
 
         if (this.isActive) {
             this.cursorTicks++
