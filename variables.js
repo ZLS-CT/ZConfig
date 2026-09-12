@@ -102,6 +102,5 @@ export const GetPresetDataFromName = (presetName) => {
 }
 
 export const inputs = {}
-export let shouldClick = new ExportableValue(false)
 export let globalColors = new ExportableValue(colorPresets["Default"])
 export let globalConfig = null

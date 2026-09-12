@@ -35,7 +35,7 @@ export const drawSwitch = (drawContext, mx, my, x, y, option, mouseOver, onSetti
         option.progress = switchWidth - 12
     }
     _drawSwitch(drawContext, x, y, switchWidth, switchHeight, option.value, option.progress, option.time)
-    if (mouseOver && Utils.isMouseButtonClicked(0)) {
+    if (mouseOver && Utils.isLeftMouseButtonClicked()) {
         option.value = !option.value
         option.time = Date.now()
         option.progress = 0
@@ -67,11 +67,11 @@ export const drawText = (drawContext, mx, my, x, y, width, option, settingsObjec
     const inputAreaWidth = width - resetButtonWidth
 
     if (Variables.inputs[option.varname].isActive) {
-        if (Utils.isMouseButtonClicked(0, true) && !mouseOver) {
+        if (Utils.isLeftMouseButtonClicked(true) && !mouseOver) {
             Variables.inputs[option.varname].callOnExit()
         }
     } else {
-        if (mouseOver && Utils.isMouseButtonClicked(0)) {
+        if (mouseOver && Utils.isLeftMouseButtonClicked()) {
             Variables.inputs[option.varname].isActive = true
         }
     }
@@ -110,7 +110,7 @@ export const drawMcColor = (drawContext, mx, my, x, y, option, mouseOver) => {
 
         ZRenderLib.drawGUIStringRGBA(drawContext, text, textX, textY, ...Variables.globalColors.text, 1, false, textShadow, 512, 1)
 
-        if (isHover && Utils.isMouseButtonClicked(0)) {
+        if (isHover && Utils.isLeftMouseButtonClicked()) {
             option.value[valueIdx] = option.value[valueIdx] == col ? "" : col
             option.changed = true
         }
@@ -139,13 +139,13 @@ export const drawColor = (drawContext, mx, my, x, y, option, settingsObject, mou
     Utils.drawOutline(drawContext, hueBarX - 1 + option.extraPersistent.hueSelection * 124, hueBarY - 2, 6, 15, ZRenderLib.BLACK)
     Utils.drawOutline(drawContext, hueBarX + option.extraPersistent.hueSelection * 124, hueBarY - 1, 4, 13, ZRenderLib.WHITE)
 
-    if (Utils.isMouseover(mx, my, hueBarX - 1, hueBarY, 128, 12) && Utils.isMouseButtonClicked(0)) {
+    if (Utils.isMouseover(mx, my, hueBarX - 1, hueBarY, 128, 12) && Utils.isLeftMouseButtonClicked()) {
         option.old = JSON.parse(JSON.stringify(option.value))
         option.hueClicked = true
     }
 
     const alpha = option.extra.allowAlpha ? option.value[3] : 255
-    if (option.hueClicked && Utils.isMouseButtonClicked(0, true)) {
+    if (option.hueClicked && Utils.isLeftMouseButtonClicked(true)) {
         option.extraPersistent.hueSelection = Math.max(0, Math.min(1, (mx - hueBarX) / 128))
         const hueColor = Utils.getColorFromHueBar(option.extraPersistent.hueSelection * 128, 128)
         option.extraPersistent.hueColor = [...hueColor]
@@ -184,12 +184,12 @@ export const drawColor = (drawContext, mx, my, x, y, option, settingsObject, mou
         Utils.drawOutline(drawContext, alphaBarX - 2, alphaBarY - 2 + option.value[3] / 255 * 125, 15, 5, ZRenderLib.BLACK)
         Utils.drawOutline(drawContext, alphaBarX - 1, alphaBarY - 1 + option.value[3] / 255 * 125, 13, 3, ZRenderLib.WHITE)
 
-        if (Utils.isMouseover(mx, my, alphaBarX, alphaBarY, 12, 128) && Utils.isMouseButtonClicked(0)) {
+        if (Utils.isMouseover(mx, my, alphaBarX, alphaBarY, 12, 128) && Utils.isLeftMouseButtonClicked()) {
             option.old = JSON.parse(JSON.stringify(option.value))
             option.alphaClicked = true
         }
 
-        if (option.alphaClicked && Utils.isMouseButtonClicked(0, true)) {
+        if (option.alphaClicked && Utils.isLeftMouseButtonClicked(true)) {
             option.value[3] = Math.max(0, Math.min(255, (my - (alphaBarY + 1)) / 126 * 255))
             Utils.UpdateColorPickerHexCodeText(option)
         } else {
@@ -220,12 +220,12 @@ export const drawColor = (drawContext, mx, my, x, y, option, settingsObject, mou
     Utils.drawOutline(drawContext, x + 128 - option.extraPersistent.xDif * 128 - 4, y + 128 - option.extraPersistent.yDif * 128 - 4, 8, 8, ZRenderLib.BLACK)
     Utils.drawOutline(drawContext, x + 128 - option.extraPersistent.xDif * 128 - 3, y + 128 - option.extraPersistent.yDif * 128 - 3, 6, 6, ZRenderLib.WHITE)
 
-    if (Utils.isMouseover(mx, my, x, y, 128, 128) && Utils.isMouseButtonClicked(0)) {
+    if (Utils.isMouseover(mx, my, x, y, 128, 128) && Utils.isLeftMouseButtonClicked()) {
         option.old = JSON.parse(JSON.stringify(option.value))
         option.brightnessClicked = true
     }
 
-    if (option.brightnessClicked && Utils.isMouseButtonClicked(0, true)) {
+    if (option.brightnessClicked && Utils.isLeftMouseButtonClicked(true)) {
         option.extraPersistent.xDif = (x + 128 - Math.max(x, Math.min(mx, x + 128))) / 128
         option.extraPersistent.yDif = (y + 128 - Math.max(y, Math.min(my, y + 128))) / 128
         option.value = [
@@ -279,13 +279,13 @@ export const drawColor = (drawContext, mx, my, x, y, option, settingsObject, mou
         Variables.inputs[option.varname].onEnter(onExit)
     }
 
-    if (Utils.isMouseButtonClicked(0, true) && !mouseOver) {
+    if (Utils.isLeftMouseButtonClicked(true) && !mouseOver) {
         if (Variables.inputs[option.varname].isActive) {
             option.changed = true
             Variables.inputs[option.varname].callOnExit()
         }
     }
-    if (mouseOver && Utils.isMouseButtonClicked(0)) {
+    if (mouseOver && Utils.isLeftMouseButtonClicked()) {
         if (!Variables.inputs[option.varname].isActive) {
             option.changed = true
         }
@@ -320,7 +320,7 @@ export const drawButton = (drawContext, mx, my, x, y, width, option, mouseOver) 
     ZRenderLib.drawGUIStringRGBA(drawContext, label, textX, textY, ...colors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
 
     // Handle click
-    if (mouseOver && Utils.isMouseButtonClicked(0) && option.onPress) {
+    if (mouseOver && Utils.isLeftMouseButtonClicked() && option.onPress) {
         option.onPress(option)
     }
 }
@@ -364,7 +364,7 @@ export const drawSlider = (drawContext, mx, my, x, y, option, settingsObject, mo
     ZRenderLib.drawRoundedRect(drawContext, handleX, handleY, handleWidth, handleH, 2, ZRenderLib.WHITE)
 
     // Handle click to start dragging
-    if (Utils.isMouseover(mx, my, trackX - 1, y, width + 2, sliderHeight) && Utils.isMouseButtonClicked(0)) {
+    if (Utils.isMouseover(mx, my, trackX - 1, y, width + 2, sliderHeight) && Utils.isLeftMouseButtonClicked()) {
         option.old = JSON.parse(JSON.stringify(option.value))
         option.clicked = true
     }
@@ -378,7 +378,7 @@ export const drawSlider = (drawContext, mx, my, x, y, option, settingsObject, mo
     }
 
     // Handle dragging
-    if (option.clicked && Utils.isMouseButtonClicked(0, true)) {
+    if (option.clicked && Utils.isLeftMouseButtonClicked(true)) {
         option.value = normalizeValue((mx - trackX) / width * dif + minVal)
         drawTooltip({
             line: `${Math.floor(option.value * width) / width}${option.extra.isPercent ? "%" : ""}`,
@@ -415,10 +415,10 @@ export const drawSlider = (drawContext, mx, my, x, y, option, settingsObject, mo
 
     // Handle input activation
     if (input.isActive) {
-        if (Utils.isMouseButtonClicked(0, true) && !mouseOver) {
+        if (Utils.isLeftMouseButtonClicked(true) && !mouseOver) {
             input.callOnExit()
         }
-    } else if (mouseOver && Utils.isMouseButtonClicked(0)) {
+    } else if (mouseOver && Utils.isLeftMouseButtonClicked()) {
         input.isActive = true
     }
 
@@ -449,7 +449,7 @@ export const drawDropdown = (drawContext, mx, my, x, y, option, mouseOver) => {
         let ii = 1
         option.options.forEach((str, i) => {
             let mOver = Utils.isMouseover(mx, my, x, y + ii * 16 * progress, w, 16)
-            if (mOver && Utils.isMouseButtonClicked(0)) {
+            if (mOver && Utils.isLeftMouseButtonClicked()) {
                 option.value = option.extra.selection ? str : ii - 1
                 option.time = Date.now()
                 option.progress = 1
@@ -487,7 +487,7 @@ export const drawDropdown = (drawContext, mx, my, x, y, option, mouseOver) => {
         })
     }
 
-    if (mouseOver && Utils.isMouseButtonClicked(0)) {
+    if (mouseOver && Utils.isLeftMouseButtonClicked()) {
         option.down = !option.down
         option.time = Date.now()
         option.progress = (option.down ? 0 : 1)
@@ -543,7 +543,7 @@ export const drawKeybind = (drawContext, mx, my, x, y, width, option, settingsOb
         }
         _drawSwitch(drawContext, toggleX, toggleY, toggleWidth, toggleHeight, option.extraPersistent.activateInMenus, option.progress, option.time)
         ZRenderLib.drawGUIStringRGBA(drawContext, "Trigger in Menus?", toggleTextX, toggleTextY, ...Variables.globalColors.secondaryText, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
-        if (isToggleHovered && Utils.isMouseButtonClicked(0)) {
+        if (isToggleHovered && Utils.isLeftMouseButtonClicked()) {
             option.extraPersistent.activateInMenus = !option.extraPersistent.activateInMenus
             option.time = Date.now()
             option.progress = 0
@@ -553,11 +553,11 @@ export const drawKeybind = (drawContext, mx, my, x, y, width, option, settingsOb
     }
 
     if (Variables.inputs[option.varname].isActive) {
-        if (Utils.isMouseButtonClicked(0, true) && !mouseOver) {
+        if (Utils.isLeftMouseButtonClicked(true) && !mouseOver) {
             Variables.inputs[option.varname].callOnChanged()
         }
     } else {
-        if ((mouseOver && !isToggleHovered) && Utils.isMouseButtonClicked(0)) {
+        if ((mouseOver && !isToggleHovered) && Utils.isLeftMouseButtonClicked()) {
             Variables.inputs[option.varname].isActive = true
         }
     }
@@ -624,7 +624,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
 
         if (!option.addMenuOpen && Utils.isMouseover(mx, my, x + 1, rY - 2, width - 2, 12)) {
             if (!option.clicked) {
-                if (Utils.isMouseButtonClicked(0)) {
+                if (Utils.isLeftMouseButtonClicked()) {
                     option.old = JSON.parse(JSON.stringify(option.value))
                     if (Utils.isMouseover(mx, my, x + width - 12, rY - 1, 10, 10)) {
                         const isCustom = option.placeholder && !(arr[1] in option.placeholder)
@@ -652,7 +652,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
             }
         }
 
-        if (option.clicked && !Utils.isMouseButtonClicked(0, true)) {
+        if (option.clicked && !Utils.isLeftMouseButtonClicked(true)) {
             if (option.clicked) {
                 option.changed = true
             }
@@ -683,7 +683,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
             // Hover highlight
             if (Utils.isMouseover(mx, my, optionBoxX + 1, optionBoxY + 1, optionBoxWidth - 2, optionBoxHeight)) {
                 ZRenderLib.drawRectRGBA(drawContext, optionBoxX + 1, optionBoxY + 1, optionBoxWidth - 2, optionBoxHeight, ...Variables.globalColors.light, 1)
-                if (!isOverLimit && Utils.isMouseButtonClicked(0)) {
+                if (!isOverLimit && Utils.isLeftMouseButtonClicked()) {
                     option.old = JSON.parse(JSON.stringify(option.value))
                     option.value[arr[1]] = activeOptions.length
                     option.changed = true
@@ -698,10 +698,10 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
 
     if (!option.addMenuOpen && Utils.isMouseover(mx, my, addButtonX - 2.5, addButtonY - 1, 10, 10) && addOptions.length > 0) {
         ZRenderLib.drawRectRGBA(drawContext, addButtonX - 2.5, addButtonY - 1, 10, 10, 255, 255, 255, 100)
-        if (Utils.isMouseButtonClicked(0) && addOptions.length > 0) {
+        if (Utils.isLeftMouseButtonClicked() && addOptions.length > 0) {
             option.addMenuOpen = true
         }
-    } else if (Utils.isMouseButtonClicked(0, false, true)) {
+    } else if (Utils.isLeftMouseButtonClicked(false, true)) {
         option.addMenuOpen = false
     }
 
@@ -748,7 +748,7 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
     ZRenderLib.drawRoundedRectRGBA(drawContext, buttonX, buttonY, buttonWidth, buttonHeight, 3, ...buttonColor)
     ZRenderLib.drawGUIStringRGBA(drawContext, buttonLabel, buttonTextX, buttonTextY, ...buttonTextColor, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
 
-    if (isButtonHover && Utils.isMouseButtonClicked(0)) {
+    if (isButtonHover && Utils.isLeftMouseButtonClicked()) {
         TryAddNewListValue()
     }
 
@@ -763,11 +763,11 @@ export const drawList = (drawContext, mx, my, x, y, option, mouseOver) => {
             Variables.inputs[option.varname].callOnExit()
         }
     } else if (Variables.inputs[option.varname].isActive) {
-        if (Utils.isMouseButtonClicked(0, true) && !isTextBoxHover) {
+        if (Utils.isLeftMouseButtonClicked(true) && !isTextBoxHover) {
             Variables.inputs[option.varname].callOnExit()
         }
     } else if (isTextBoxHover) {
-        if (Utils.isMouseButtonClicked(0)) {
+        if (Utils.isLeftMouseButtonClicked()) {
             Variables.inputs[option.varname].isActive = true
         }
     }
@@ -823,7 +823,7 @@ export const drawUnorderedList = (drawContext, mx, my, x, y, width, option, mous
 
         // X Button
         if (Utils.isMouseover(mx, my, x + boxWidth - 12, rY - 1, 10, 10)) {
-            if (Utils.isMouseButtonClicked(0)) {
+            if (Utils.isLeftMouseButtonClicked()) {
                 option.old = JSON.parse(JSON.stringify(option.value))
                 option.value.splice(index, 1)
                 option.changed = true
@@ -847,7 +847,7 @@ export const drawUnorderedList = (drawContext, mx, my, x, y, width, option, mous
     ZRenderLib.drawRoundedRectRGBA(drawContext, buttonX, buttonY, buttonWidth, buttonHeight, 3, ...buttonColor)
     ZRenderLib.drawGUIStringRGBA(drawContext, buttonLabel, buttonTextX, buttonTextY, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 1)
 
-    if (isButtonHover && Utils.isMouseButtonClicked(0)) {
+    if (isButtonHover && Utils.isLeftMouseButtonClicked()) {
         TryAddNewListValue()
     }
 
@@ -858,11 +858,11 @@ export const drawUnorderedList = (drawContext, mx, my, x, y, width, option, mous
     const isTextBoxHover = Utils.isMouseover(mx, my, textBoxX, textBoxY, textBoxWidth, textBoxHeight)
 
     if (Variables.inputs[option.varname].isActive) {
-        if (Utils.isMouseButtonClicked(0, true) && !isTextBoxHover) {
+        if (Utils.isLeftMouseButtonClicked(true) && !isTextBoxHover) {
             Variables.inputs[option.varname].callOnExit()
         }
     } else if (isTextBoxHover) {
-        if (Utils.isMouseButtonClicked(0)) {
+        if (Utils.isLeftMouseButtonClicked()) {
             Variables.inputs[option.varname].isActive = true
         }
     }
@@ -888,7 +888,7 @@ export const drawHud = (drawContext, mx, my, x, y, width, option, mouseOver, las
     ZRenderLib.drawRoundedRectRGBA(drawContext, x + 8, y - 14, buttonWidth, 16, 4, ...buttonColor)
     ZRenderLib.drawGUIStringRGBA(drawContext, buttonText, x + buttonWidth / 2 - (ZRenderLib.getStringWidth(buttonText) / 2) + 8, y + 4 - 14, ...Variables.globalColors.text, 1, false, Variables.globalConfig.globalTextShadow, 512, 2)
 
-    if (mouseOver && Utils.isMouseButtonClicked(0)) {
+    if (mouseOver && Utils.isLeftMouseButtonClicked()) {
         Hud.openHudGui(lastOpenedGUI)
     }
 }
@@ -919,7 +919,7 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, config, mouseOve
         let ii = 1
         visibleOptions.forEach(([prettyName, varName], i) => {
             let mOver = Utils.isMouseover(mx, my, x, y + ii * 16 * progress, w, 16)
-            if (mOver && Utils.isMouseButtonClicked(0)) {
+            if (mOver && Utils.isLeftMouseButtonClicked()) {
                 if (option.value.includes(varName)) {
                     option.value = option.value.filter(opt => opt !== varName)
                 } else {
@@ -961,7 +961,7 @@ export const drawCheckbox = (drawContext, mx, my, x, y, option, config, mouseOve
         })
     }
 
-    if (mouseOver && Utils.isMouseButtonClicked(0)) {
+    if (mouseOver && Utils.isLeftMouseButtonClicked()) {
         option.down = !option.down
         option.time = Date.now()
         option.progress = (option.down ? 0 : 1)

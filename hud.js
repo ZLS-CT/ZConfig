@@ -205,10 +205,6 @@ function clampHudToScreen(hud, screenWidth, screenHeight) {
 hudGui.registerDraw((drawContext, mx, my, partialTicks) => {
     [drawContext, mx, my, partialTicks] = ZRenderLib.FixGUIRenderValues(drawContext, mx, my, partialTicks)
 
-    if (!Utils.isMouseButtonDown(0)) {
-        Variables.shouldClick = true
-    }
-
     const screenSize = ZRenderLib.getScreenSize()
     const screenWidth = screenSize.width
     const screenHeight = screenSize.height
@@ -234,10 +230,10 @@ hudGui.registerDraw((drawContext, mx, my, partialTicks) => {
         // Scale handle
         if (Utils.isMouseover(mx, my, hud.x + hudWidth - 4, hud.y + hudHeight - 4, 8, 8)) {
             ZRenderLib.drawRectRGBA(drawContext, hud.x + hudWidth - 4, hud.y + hudHeight - 4, 8, 8, 255, 255, 255, 255)
-            if (Utils.isMouseButtonClicked(0)) {
+            if (Utils.isLeftMouseButtonClicked()) {
                 hud.scaleClicked = true
                 hud.scaleTime = Date.now()
-            } else if (!Utils.isMouseButtonDown(0)) {
+            } else if (!ZKeys.isLeftMouseButtonDown()) {
                 hud.scaleClicked = false
             }
         } else {
@@ -247,7 +243,7 @@ hudGui.registerDraw((drawContext, mx, my, partialTicks) => {
         if (Utils.isMouseover(mx, my, hud.x, hud.y, hudWidth, hudHeight)) {
             hoveredHud = hud
             isHovered = true
-            if (Utils.isMouseButtonClicked(0)) {
+            if (Utils.isLeftMouseButtonClicked()) {
                 hud.time = Date.now()
                 hud.clicked = true
                 hud.offsetX = mx - hud.x
@@ -257,7 +253,7 @@ hudGui.registerDraw((drawContext, mx, my, partialTicks) => {
 
         let snapLines = []
         if (hud.clicked) {
-            if (!Utils.isMouseButtonDown(0)) {
+            if (!ZKeys.isLeftMouseButtonDown()) {
                 hud.clicked = false
             }
 
@@ -340,7 +336,7 @@ hudGui.registerDraw((drawContext, mx, my, partialTicks) => {
     let closeGUI = false
     if (Utils.isMouseover(mx, my, buttonX, buttonY, buttonSize, buttonSize)) {
         buttonColor = Variables.globalColors.bright
-        if (Utils.isMouseButtonClicked(0)) {
+        if (Utils.isLeftMouseButtonClicked()) {
             closeGUI = true
         }
     }

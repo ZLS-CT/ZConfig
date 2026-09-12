@@ -413,13 +413,9 @@ export class ZConfigSettings {
                 section.scroll = Math.max(section.max * -1, Math.min(0, section.scroll))
                 section.time = Date.now()
 
-                if (!Utils.isMouseButtonDown(0)) {
+                if (!ZKeys.isLeftMouseButtonDown()) {
                     section.clicked = false
                 }
-            }
-
-            if (!Utils.isMouseButtonDown(0)) {
-                Variables.shouldClick = true
             }
 
             let colors = {
@@ -526,7 +522,7 @@ export class ZConfigSettings {
                 let backButtonColor = colors.primary
                 if (Utils.isMouseover(mx, my, backButtonX - insetSpacing, backButtonY - insetSpacing, backButtonSize + doubleInsetSpacing, backButtonSize + doubleInsetSpacing)) {
                     backButtonColor = colors.bright
-                    if (Utils.isMouseButtonClicked(0)) {
+                    if (Utils.isLeftMouseButtonClicked()) {
                         this.lastOpenedGUI?.open()
                     }
                 }
@@ -542,7 +538,7 @@ export class ZConfigSettings {
 
             let searchbarColor = colors.darker
             let searchbarMouseOver = Utils.isMouseover(mx, my, searchBarX, searchBarY, searchBarWidth, searchBarHeight)
-            if (Utils.isMouseButtonClicked(0, true)) {
+            if (Utils.isLeftMouseButtonClicked(true)) {
                 searchBar.isActive = searchbarMouseOver
             }
             if (searchbarMouseOver) {
@@ -576,7 +572,7 @@ export class ZConfigSettings {
                 if (Utils.isMouseover(mx, my, sidebarButtonX - doubleInsetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth - sidebarButtonPaddingX + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing)) {
                     globalSettingsButtonColor = colors.light
                     globalSettingsButtonTextColor = ZRenderLib.getRGBAColorList255(ZRenderLib.YELLOW)
-                    if (Utils.isMouseButtonClicked(0)) {
+                    if (Utils.isLeftMouseButtonClicked()) {
                         Variables.globalConfig.lastOpenedGUI = this.gui
                         Variables.globalConfig.gui?.open()
                     }
@@ -617,7 +613,7 @@ export class ZConfigSettings {
                 if (Utils.isMouseover(mx, my, sidebarButtonX - doubleInsetSpacing, lastSidebarButtonY - insetSpacing, sidebarButtonWidth + doubleInsetSpacing + 1, sidebarButtonHeight + doubleInsetSpacing)) {
                     editHudButtonColor = colors.light
                     editHudButtonTextColor = ZRenderLib.getRGBAColorList255(ZRenderLib.YELLOW)
-                    if (Utils.isMouseButtonClicked(0)) {
+                    if (Utils.isLeftMouseButtonClicked()) {
                         Hud.openHudGui(currentOpenedGUI)
                         return
                     }
@@ -693,7 +689,7 @@ export class ZConfigSettings {
                     let mouseOver = Utils.isMouseover(mx, my, rrX, rrY, categoryWidth - categoryPadding * 3, 14)
                     let hoverColor = null
                     if (mouseOver) {
-                        if (Utils.isMouseButtonClicked(0)) {
+                        if (Utils.isLeftMouseButtonClicked()) {
                             this.selectedCategory = [categoryName, categoryData]
                             this.selectedOption = null
                             this.selectedSettings = null
@@ -977,7 +973,7 @@ export class ZConfigSettings {
                                 y: resetBoxY - 8
                             }
 
-                            if (Utils.isMouseButtonClicked(0)) {
+                            if (Utils.isLeftMouseButtonClicked()) {
                                 this.ResetOption(option)
                             }
                         } else {
@@ -1127,7 +1123,7 @@ export class ZConfigSettings {
             scroll[0].max = Math.max(0, (i * 12) - (height + doubleInsetSpacing))
             scroll[0].width = boxWidth + paddingX * 2
 
-            if (this.selectedSettings && Utils.isMouseButtonDown(0) && Variables.shouldClick) {
+            if (this.selectedSettings && ZKeys.isLeftMouseButtonDown() && ZKeys.getShouldClickLeft()) {
                 this.selectedSettings = null
             }
 
@@ -1158,7 +1154,7 @@ export class ZConfigSettings {
                     let handleColor = colors.tertiary
                     if (Utils.isMouseover(mx, my, rX, titleHeight, scrollBarWidth, height) || section.clicked) {
                         handleColor = colors.light
-                        if (Utils.isMouseButtonClicked(0)) {
+                        if (Utils.isLeftMouseButtonClicked()) {
                             section.initialY = my
                             section.clicked = true
                         }

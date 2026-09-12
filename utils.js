@@ -27,15 +27,13 @@ register("guiClosed", () => {
     OnGUIChanged()
 })
 
-export const isMouseButtonClicked = (num, stopClick, reset) => {
-    if (isMouseButtonDown(num) && (Variables.shouldClick || stopClick)) {
-        if (!stopClick && !reset) {
-            PlaySound("gui.button.press", 1, 1)
-            Variables.shouldClick = false
-        }
-        return true
+export const isLeftMouseButtonClicked = (stopClick = false, reset = false) => {
+    let shouldClick = ZKeys.getShouldClickLeft()
+    let success = ZKeys.isLeftMouseButtonClicked(stopClick, reset)
+    if (success && shouldClick && !stopClick && !reset) {
+        PlaySound("gui.button.press", 1, 1)
     }
-    return false
+    return success
 }
 
 export const RemoveFormatting = (text) => {
@@ -65,17 +63,6 @@ export const PlaySound = (name, volume = 1, pitch = 1) => {
             pitch: pitch,
         }).play()
     }
-}
-
-let mouseButtonClicked = {}
-register("clicked", (mx, my, mbtn, state) => {
-    mouseButtonClicked[mbtn] = state
-})
-export const isMouseButtonDown = (num) => {
-    if (mouseButtonClicked[num] == undefined) {
-        mouseButtonClicked[num] = false
-    }
-    return mouseButtonClicked[num]
 }
 
 export const UpdateColorPickerHexCodeText = (option) => {
@@ -149,10 +136,6 @@ export const FixGUIRenderValues = (drawContext, mx, my, partialTicks) => {
 
 const markdownCache = new Map()
 export const drawMarkdown = (mx, my, x, y, width, option) => {
-    if (!isMouseButtonDown(0)) {
-        Variables.shouldClick = true
-    }
-
     const cacheKey = `${option.value}-${width}`
     if (markdownCache.has(cacheKey)) {
         var { height, elements } = markdownCache.get(cacheKey)
@@ -415,8 +398,8 @@ function applyInlineFormatting(drawContext, paragraph, x, y, mx, my, darkColor, 
         const linkX = x + getStringWidth(paragraph.slice(0, linkMatch.index))
 
         if (isMouseover(mx, my, linkX, y, getStringWidth(linkText), 10)) {
-            if (isMouseButtonDown(0) && Variables.shouldClick) {
-                Variables.shouldClick = false
+            if (isLeftMouseButtonDown() && ZKeys.getShouldClickLeft()) {
+                ZKeys.setShouldClickLeft(false)
                 openUrl(linkUrl)
             }
         }
@@ -881,7 +864,7 @@ export class KeybindInput {
             }),
             register("guiMouseClick", (mx, my, mb, _, event) => {
                 if (!this.isActive) return
-                if (mb == 0) return
+                if (mb == ZKeys.getKeyCode("LEFT_MOUSE") + 100) return
 
                 this.clearModifierDelay()
                 this.pendingModifierKey = null
@@ -913,16 +896,15 @@ export class KeybindInput {
                 if (this.onPressCallback == null) return
                 if (!this.activateInMenus && currentInventory != null) return
 
+                const pressed = this.isMouseKey ? ZKeys.isMouseKeyCodeDown(this.keyCode) : ZKeys.isKeyCodeDown(this.keyCode)
                 if (this.ignoreUntilRelease) {
-                    const notPressed = (this.isMouseKey) ? (!isMouseButtonDown(this.keyCode + 100)) : (!ZKeys.isKeyCodeDown(this.keyCode))
-                    if (notPressed) {
+                    if (!pressed) {
                         this.ignoreUntilRelease = false
                     }
                     return
                 }
 
                 const isStandaloneModifier = ZKeys.isModifierKeyCode(this.keyCode)
-                const pressed = (this.isMouseKey) ? (isMouseButtonDown(this.keyCode + 100)) : (ZKeys.isKeyCodeDown(this.keyCode))
                 const shouldTrigger = isStandaloneModifier ? pressed : pressed && this.checkModifiers()
 
                 if (shouldTrigger) {
