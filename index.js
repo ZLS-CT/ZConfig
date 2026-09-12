@@ -91,6 +91,7 @@ export class ZConfigSettings {
             optionOrVarname = this.data.allOptions[optionOrVarname]
         }
         const option = optionOrVarname
+        if (!option || !option.canReset) return
         option.old = JSON.parse(JSON.stringify(option.value))
         if (option.type == "hud") {
             option.value.x = option.placeholder.baseX
@@ -121,7 +122,8 @@ export class ZConfigSettings {
             } else if (option.type == "text") {
                 utils.UpdateInputFieldText(option, option.value)
             } else if (option.type == "keybind") {
-                Variables.inputs[option.varname].reset(option.placeholder)
+                const variables = require("../ZConfig/variables")
+                variables.inputs[option.varname].reset(option.placeholder)
                 option.extraPersistent = JSON.parse(JSON.stringify(option.extra.persistentPlaceholder))
             }
         }
